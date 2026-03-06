@@ -20,10 +20,6 @@ const songName = document.getElementById("song-name");
 const playIcon = document.getElementById("play-icon");
 const pauseIcon = document.getElementById("pause-icon");
 const progress = document.getElementById("progress-fill");
-const logoTrigger = document.getElementById("logo-trigger");
-const logoB1 = document.getElementById("logo-b1");
-const catchHand = document.getElementById("catch-hand");
-
 const canvas = document.getElementById("mask-canvas");
 const ctx = canvas.getContext("2d");
 
@@ -219,21 +215,20 @@ function buildHomepage() {
         }
     });
 
-    // Headline reveal — lines slide up one by one
-    gsap.utils.toArray(".reveal-line").forEach((line, i) => {
-        gsap.fromTo(line,
-            { y: "110%", opacity: 0 },
-            {
-                y: "0%", opacity: 1,
-                duration: 1.1, ease: "power4.out",
-                delay: i * 0.12,
-                scrollTrigger: {
-                    trigger: "#homepage",
-                    start: "top 70%",
-                    invalidateOnRefresh: true,
-                }
-            }
-        );
+    // Headline reveal — words reveal one by one
+    gsap.utils.toArray("#reveal-headline .word").forEach((word, i) => {
+        gsap.to(word, {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+                trigger: "#reveal-headline",
+                start: "top 75%",
+                toggleActions: "play none none reverse",
+            },
+            delay: i * 0.12,
+        });
     });
 
     // Subtitle + scroll cue fade up
@@ -253,31 +248,33 @@ function buildHomepage() {
         );
     });
 
+    // Mac OS Dock visibility
+    ScrollTrigger.create({
+        trigger: "#homepage",
+        start: "top 80%",
+        onEnter: () => {
+            document.getElementById("dock").classList.add("visible");
+        },
+        onLeaveBack: () => {
+            document.getElementById("dock").classList.remove("visible");
+        }
+    });
+
+
+
     ScrollTrigger.refresh();
 }
 
 /* ═══════════════════════════════════════════
-   LETTER B DROP ANIMATION
-   Click BB logo → first B drops → hand catches
+   LET'S CONNECT BUTTON TOGGLE
 ════════════════════════════════════════════ */
-let dropped = false;
-
-logoTrigger.addEventListener("mouseenter", () => {
-    if (dropped) return;
-    dropped = true;
-    logoB1.classList.add("drop");
-    setTimeout(() => {
-        catchHand.classList.add("visible");
-    }, 350);
+const connectBtn = document.getElementById("connect-btn");
+const contactReveal = document.getElementById("contact-reveal");
+connectBtn.addEventListener("click", () => {
+    contactReveal.classList.toggle("open");
 });
 
-logoTrigger.addEventListener("mouseleave", () => {
-    setTimeout(() => {
-        logoB1.classList.remove("drop");
-        catchHand.classList.remove("visible");
-        dropped = false;
-    }, 800);
-});
+
 
 /* ═══════════════════════════════════════════
    MAGNETIC BUTTONS
@@ -420,3 +417,109 @@ audio.addEventListener("timeupdate", () => {
         progress.style.width = (audio.currentTime / audio.duration * 100) + "%";
     }
 });
+
+/* ── RHUMB REVEAL OBSERVER ── */
+const revealEls = document.querySelectorAll('.rhumb-reveal, #about-section');
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+        }
+    });
+}, { threshold: 0.15 });
+
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ── CURSOR REVEAL (SVG MASK) ── */
+(function () {
+    const scene = document.getElementById('cr-scene');
+    const reveal = document.querySelector('.cr-reveal-layer');
+    if (!scene || !reveal) return;
+
+    const dot = document.createElement('div');
+    dot.className = 'cr-dot';
+    document.body.appendChild(dot);
+
+    scene.addEventListener('mousemove', function (e) {
+        const hint = document.getElementById('cr-hint-wrap');
+        if (hint) hint.classList.add('hidden');
+        document.querySelector('.cr-base-layer').style.opacity = '0';
+        const rect = scene.getBoundingClientRect();
+        const x = (e.clientX - rect.left).toFixed(1);
+        const y = (e.clientY - rect.top).toFixed(1);
+        reveal.style.clipPath = `circle(160px at ${x}px ${y}px)`;
+        dot.style.left = e.clientX + 'px';
+        dot.style.top = e.clientY + 'px';
+        dot.classList.add('on');
+        if (window.cursor) window.cursor.style.opacity = '0';
+        if (window.ring) window.ring.style.opacity = '0';
+    });
+
+    scene.addEventListener('mouseleave', function (e) {
+        document.querySelector('.cr-base-layer').style.opacity = '1';
+        const rect = scene.getBoundingClientRect();
+        const x = (e.clientX - rect.left).toFixed(1);
+        const y = (e.clientY - rect.top).toFixed(1);
+        reveal.style.transition = 'clip-path 0.5s cubic-bezier(0.16,1,0.3,1)';
+        reveal.style.clipPath = `circle(0px at ${x}px ${y}px)`;
+        setTimeout(() => { reveal.style.transition = 'none'; }, 500);
+        dot.classList.remove('on');
+        if (window.cursor) window.cursor.style.opacity = '1';
+        if (window.ring) window.ring.style.opacity = '1';
+    });
+})();
+
+/* ── TYPEWRITER ── */
+(function () {
+    const el1 = document.getElementById('typewriter');
+    const el2 = document.getElementById('typewriter-clone');
+    if (!el1) return;
+
+    const words = [
+        'Developer',
+        'Musician',
+        'IT Engineer',
+        'Full Stack Dev',
+        'Guitarist',
+        'Network Engineer',
+        'Problem Solver'
+    ];
+
+    let wordIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    const typeSpeed = 90;
+    const deleteSpeed = 50;
+    const pauseAfterWord = 1800;
+    const pauseAfterDelete = 400;
+
+    function type() {
+        const current = words[wordIndex];
+        const text = deleting
+            ? current.slice(0, charIndex - 1)
+            : current.slice(0, charIndex + 1);
+
+        el1.textContent = text;
+        if (el2) el2.textContent = text;
+
+        if (!deleting) {
+            charIndex++;
+            if (charIndex === current.length) {
+                deleting = true;
+                setTimeout(type, pauseAfterWord);
+                return;
+            }
+        } else {
+            charIndex--;
+            if (charIndex === 0) {
+                deleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                setTimeout(type, pauseAfterDelete);
+                return;
+            }
+        }
+        setTimeout(type, deleting ? deleteSpeed : typeSpeed);
+    }
+    type();
+})();
+
