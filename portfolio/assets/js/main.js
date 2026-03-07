@@ -87,7 +87,7 @@ function drawMask(scale, darkOpacity) {
 
     // 1. Fill dark overlay
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(14, 19, 32, ${darkOpacity})`;
+    ctx.fillStyle = `rgba(0, 180, 180, ${darkOpacity})`;
     ctx.fillRect(0, 0, w, h);
 
     // 2. Punch out VIBE text — transparent holes
@@ -103,9 +103,6 @@ function drawMask(scale, darkOpacity) {
 
     ctx.globalCompositeOperation = "source-over";
 }
-
-sizeCanvas();
-drawMask(1, 1);
 
 window.addEventListener("resize", () => {
     sizeCanvas();
@@ -136,6 +133,9 @@ function buildVibe() {
     /* Proxy objects for canvas redraws */
     const vibeProxy = { scale: 1 };
     const darkProxy = { opacity: 1 };
+
+    sizeCanvas();
+    document.fonts.ready.then(() => drawMask(1, 1));
 
     const tl = gsap.timeline({
         scrollTrigger: {
@@ -197,23 +197,45 @@ function buildVibe() {
 ════════════════════════════════════════════ */
 function buildHomepage() {
 
-    // Music player appears when homepage enters view
+    // Cursor color changes when entering homepage
     ScrollTrigger.create({
         trigger: "#homepage",
         start: "top 80%",
         onEnter: () => {
-            player.classList.add("visible");
             darkNav.classList.remove("visible");
             cursor.style.background = "#1A1A1A";
             ring.style.borderColor = "rgba(26,26,26,0.4)";
         },
         onLeaveBack: () => {
-            player.classList.remove("visible");
             darkNav.classList.add("visible");
             cursor.style.background = "#ffffff";
             ring.style.borderColor = "rgba(255,255,255,0.4)";
         }
     });
+
+    /* ── HOMEPAGE BG VIDEO ── */
+    const homeBgVideo = document.getElementById(
+        "homepage-bg-video"
+    );
+    if (homeBgVideo) {
+        const videoObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        homeBgVideo.play().catch(() => { });
+                        homeBgVideo.classList.add('active');
+                    } else {
+                        homeBgVideo.pause();
+                        homeBgVideo.classList.remove('active');
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+        videoObserver.observe(
+            document.getElementById("homepage")
+        );
+    }
 
     // Headline reveal — words reveal one by one
     gsap.utils.toArray("#reveal-headline .word").forEach((word, i) => {
@@ -523,3 +545,197 @@ revealEls.forEach(el => revealObserver.observe(el));
     type();
 })();
 
+/* ── CURTAIN REVEAL into about section ── */
+gsap.to("#about-section", {
+    clipPath: "inset(0% 0 0 0)",
+    ease: "none",
+    scrollTrigger: {
+        trigger: "#about-section",
+        start: "top bottom",
+        end: "top top",
+        scrub: 1,
+        invalidateOnRefresh: true,
+    }
+});
+
+/* ── STICKY NOTES ── */
+gsap.utils.toArray(".sticky-note").forEach((note, i) => {
+    const rot = note.style.getPropertyValue("--rot") || "0deg";
+    gsap.fromTo(note,
+        {
+            opacity: 0,
+            y: 40,
+        },
+        {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            ease: "back.out(1.4)",
+            delay: i * 0.15,
+            scrollTrigger: {
+                trigger: ".sticky-board",
+                start: "top 75%",
+                toggleActions: "play none none reverse"
+            }
+        }
+    );
+});
+
+document.querySelectorAll(".sticky-note")
+    .forEach(note => {
+        let isDragging = false;
+        let startX, startY, initLeft, initTop;
+
+        note.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            initLeft = note.offsetLeft;
+            initTop = note.offsetTop;
+            note.style.zIndex = 999;
+            note.style.transition = "none";
+            e.preventDefault();
+        });
+
+        window.addEventListener("mousemove", (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            note.style.left = (initLeft + dx) + "px";
+            note.style.top = (initTop + dy) + "px";
+        });
+
+        window.addEventListener("mouseup", () => {
+            if (!isDragging) return;
+            isDragging = false;
+            note.style.zIndex = 10;
+            note.style.transition =
+                "box-shadow 0.2s ease, transform 0.2s ease";
+        });
+
+        /* Touch support */
+        note.addEventListener("touchstart", (e) => {
+            const touch = e.touches[0];
+            isDragging = true;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            initLeft = note.offsetLeft;
+            initTop = note.offsetTop;
+            note.style.zIndex = 999;
+        }, { passive: true });
+
+        window.addEventListener("touchmove", (e) => {
+            if (!isDragging) return;
+            const touch = e.touches[0];
+            const dx = touch.clientX - startX;
+            const dy = touch.clientY - startY;
+            note.style.left = (initLeft + dx) + "px";
+            note.style.top = (initTop + dy) + "px";
+        }, { passive: true });
+
+        window.addEventListener("touchend", () => {
+            isDragging = false;
+            note.style.zIndex = 10;
+        });
+    });
+
+
+/* ── FLOATING MUSIC TRIGGER BUTTON ── */
+(function () {
+    const triggerBtn = document.getElementById("music-trigger-btn");
+    const musicPlayer = document.getElementById("music-player");
+    let playerOpen = false;
+
+    triggerBtn.addEventListener("click", () => {
+        playerOpen = !playerOpen;
+        if (playerOpen) {
+            musicPlayer.classList.add("open");
+            playSong();
+        } else {
+            musicPlayer.classList.remove("open");
+            pauseSong();
+        }
+    });
+
+    // Keep play/pause icon in player in sync
+    audio.addEventListener("play", () => {
+        document.getElementById("play-icon").style.display = "none";
+        document.getElementById("pause-icon").style.display = "block";
+    });
+    audio.addEventListener("pause", () => {
+        document.getElementById("play-icon").style.display = "block";
+        document.getElementById("pause-icon").style.display = "none";
+    });
+})();
+
+/* ── PIXEL SNOW (about section background) ── */
+(function () {
+    const snowCanvas = document.getElementById("snow-canvas");
+    if (!snowCanvas) return;
+
+    const sc = snowCanvas.getContext("2d");
+    const COLORS = [
+        "rgba(255,255,255,0.9)",
+        "rgba(255,255,255,0.6)",
+        "rgba(242,235,224,0.7)",
+        "rgba(255,255,255,0.4)",
+    ];
+
+    let cols, rows, flakes = [];
+
+    function resizeSnow() {
+        snowCanvas.width = snowCanvas.offsetWidth;
+        snowCanvas.height = snowCanvas.offsetHeight;
+        cols = Math.ceil(snowCanvas.width / 8);
+        rows = Math.ceil(snowCanvas.height / 8);
+    }
+
+    function spawnFlake() {
+        const r = 1.5 + Math.random() * 3;
+        flakes.push({
+            x: Math.random() * (snowCanvas.width || 800),
+            y: -r * 2,
+            r: r,
+            speed: 0.4 + Math.random() * 0.8,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            drift: (Math.random() - 0.5) * 0.4,
+            progress: 0,
+        });
+    }
+
+    let lastTime = 0;
+    function drawSnow(ts) {
+        const dt = Math.min(ts - lastTime, 50);
+        lastTime = ts;
+
+        sc.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+
+        if (flakes.length < 100) spawnFlake();
+
+        flakes.forEach(f => {
+            f.y += f.speed * (dt / 16);
+            f.x += f.drift * (dt / 16);
+
+            sc.beginPath();
+            sc.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            sc.fillStyle = f.color;
+            sc.fill();
+        });
+
+        flakes = flakes.filter(f => f.y < snowCanvas.height + 10);
+
+        requestAnimationFrame(drawSnow);
+    }
+
+    const snowObserver = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                resizeSnow();
+                requestAnimationFrame(drawSnow);
+            }
+        });
+    }, { threshold: 0.05 });
+
+    snowObserver.observe(document.getElementById("about-section"));
+    window.addEventListener("resize", resizeSnow);
+})();

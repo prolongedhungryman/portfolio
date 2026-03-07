@@ -8,6 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap" rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;0,900;1,700;1,900&family=Barlow+Condensed:wght@900&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet" />
@@ -53,8 +54,9 @@
        Cream background, editorial layout
   ════════════════════════════════════════ -->
     <section id="homepage">
-
-
+        <video id="homepage-bg-video" muted loop playsinline preload="none">
+            <source src="assets/video/secondbg.mp4" type="video/mp4" />
+        </video>
 
         <!-- ── HERO CONTENT ── -->
         <div class="home-hero">
@@ -85,35 +87,6 @@
                     <p>Bibek Bhusal — Nepal</p>
                 </div>
 
-                <!-- Music player lives here now, directly under text -->
-                <div id="music-player" class="rhumb-reveal">
-                    <div class="player-top">
-                        <div class="now-playing-label">NOW PLAYING</div>
-                        <div class="song-name" id="song-name">—</div>
-                    </div>
-                    <div class="player-controls">
-                        <button class="ctrl-btn" id="prev-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
-                            </svg>
-                        </button>
-                        <button class="ctrl-btn play-pause" id="play-btn">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="play-icon">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="pause-icon"
-                                style="display: none;">
-                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                            </svg>
-                        </button>
-                        <button class="ctrl-btn" id="next-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
             </div>
 
             <!-- RIGHT COLUMN -->
@@ -124,62 +97,33 @@
                     <img src="assets/potrait/potrait.jpeg" alt="Bibek Bhusal" class="portrait-img" />
                 </div>
 
-                <!-- Name under portrait -->
-                <div class="portrait-name rhumb-reveal">
-                    <span class="p-name-full">BIBEK BHUSAL</span>
-                </div>
-
                 <div class="connect-wrap rhumb-reveal">
                     <button class="connect-btn" id="connect-btn">
                         <span>Let's Connect</span>
                     </button>
                     <div class="contact-reveal" id="contact-reveal">
-                        <a href="https://www.instagram.com/_notbibekdefinitely/" target="_blank" class="contact-link">
-                            Instagram ↗
-                        </a>
-                        <a href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank"
-                            class="contact-link">
-                            LinkedIn ↗
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Music player lives here, NOT fixed -->
-                <div id="music-player" class="rhumb-reveal">
-                    <div class="player-top">
-                        <div class="now-playing-label">NOW PLAYING</div>
-                        <div class="song-name" id="song-name">—</div>
-                    </div>
-                    <div class="player-controls">
-                        <button class="ctrl-btn" id="prev-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
-                            </svg>
-                        </button>
-                        <button class="ctrl-btn play-pause" id="play-btn">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="play-icon">
-                                <path d="M8 5v14l11-7z" />
-                            </svg>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="pause-icon"
-                                style="display:none">
-                                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                            </svg>
-                        </button>
-                        <button class="ctrl-btn" id="next-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M6 18l8.5-6L6 6v12zm2-8.14 5.5 3.89L8 15.14V9.86zM16 6h2v12h-2z" />
-                            </svg>
-                        </button>
-                        <button class="ctrl-btn shuffle-btn" id="shuffle-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                <path
-                                    d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
-                            </svg>
-                        </button>
-                    </div>
-                    <!-- Audio progress bar -->
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill"></div>
+                        <ul class="social-wrapper">
+                            <li class="social-icon s-instagram">
+                                <span class="social-tooltip">Instagram</span>
+                                <a href="https://www.instagram.com/_notbibekdefinitely/" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" fill="currentColor"
+                                        viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" />
+                                    </svg>
+                                </a>
+                            </li>
+                            <li class="social-icon s-linkedin">
+                                <span class="social-tooltip">LinkedIn</span>
+                                <a href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="1.2em" fill="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 23.999 23.227 23.999 22.271V1.729C23.999.774 23.2 0 22.222 0h.003z" />
+                                    </svg>
+                                </a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
@@ -203,7 +147,8 @@
                 <span class="dot">·</span>
                 <a href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank">LinkedIn ↗</a>
                 <span class="dot">·</span>
-                <span>bbhusal1996@gmail.com</span>
+                <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                        data-cfemail="fc9e9e94898f9d90cdc5c5cabc9b919d9590d29f9391">[email&#160;protected]</a></span>
                 <span class="dot">·</span>
                 <!-- Duplicate for seamless loop -->
                 <span>Bibek Bhusal</span>
@@ -220,8 +165,82 @@
                 <span class="dot">·</span>
                 <a href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank">LinkedIn ↗</a>
                 <span class="dot">·</span>
-                <span>bbhusal1996@gmail.com</span>
+                <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                        data-cfemail="2e4c4c465b5d4f421f1717186e49434f4742004d4143">[email&#160;protected]</a></span>
                 <span class="dot">·</span>
+            </div>
+        </div>
+
+        <!-- Music trigger button + player wrapper -->
+        <div id="music-trigger-wrap">
+            <button id="music-trigger-btn" aria-label="Play music">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="36px" height="36px">
+                    <rect width="36" height="36" x="0" y="0" fill="#fdd835"></rect>
+                    <path fill="#e53935"
+                        d="M38.67,42H11.52C11.27,40.62,11,38.57,11,36c0-5,0-11,0-11s1.44-7.39,3.22-9.59 c1.67-2.06,2.76-3.48,6.78-4.41c3-0.7,7.13-0.23,9,1c2.15,1.42,3.37,6.67,3.81,11.29c1.49-0.3,5.21,0.2,5.5,1.28 C40.89,30.29,39.48,38.31,38.67,42z">
+                    </path>
+                    <path fill="#b71c1c"
+                        d="M39.02,42H11.99c-0.22-2.67-0.48-7.05-0.49-12.72c0.83,4.18,1.63,9.59,6.98,9.79 c3.48,0.12,8.27,0.55,9.83-2.45c1.57-3,3.72-8.95,3.51-15.62c-0.19-5.84-1.75-8.2-2.13-8.7c0.59,0.66,3.74,4.49,4.01,11.7 c0.03,0.83,0.06,1.72,0.08,2.66c4.21-0.15,5.93,1.5,6.07,2.35C40.68,33.85,39.8,38.9,39.02,42z">
+                    </path>
+                    <path fill="#212121"
+                        d="M35,27.17c0,3.67-0.28,11.2-0.42,14.83h-2C32.72,38.42,33,30.83,33,27.17 c0-5.54-1.46-12.65-3.55-14.02c-1.65-1.08-5.49-1.48-8.23-0.85c-3.62,0.83-4.57,1.99-6.14,3.92L15,16.32 c-1.31,1.6-2.59,6.92-3,8.96v10.8c0,2.58,0.28,4.61,0.54,5.92H10.5c-0.25-1.41-0.5-3.42-0.5-5.92l0.02-11.09 c0.15-0.77,1.55-7.63,3.43-9.94l0.08-0.09c1.65-2.03,2.96-3.63,7.25-4.61c3.28-0.76,7.67-0.25,9.77,1.13 C33.79,13.6,35,22.23,35,27.17z">
+                    </path>
+                    <path fill="#01579b"
+                        d="M17.165,17.283c5.217-0.055,9.391,0.283,9,6.011c-0.391,5.728-8.478,5.533-9.391,5.337 c-0.913-0.196-7.826-0.043-7.696-5.337C9.209,18,13.645,17.32,17.165,17.283z">
+                    </path>
+                    <path fill="#212121"
+                        d="M40.739,37.38c-0.28,1.99-0.69,3.53-1.22,4.62h-2.43c0.25-0.19,1.13-1.11,1.67-4.9 c0.57-4-0.23-11.79-0.93-12.78c-0.4-0.4-2.63-0.8-4.37-0.89l0.1-1.99c1.04,0.05,4.53,0.31,5.71,1.49 C40.689,24.36,41.289,33.53,40.739,37.38z">
+                    </path>
+                    <path fill="#81d4fa"
+                        d="M10.154,20.201c0.261,2.059-0.196,3.351,2.543,3.546s8.076,1.022,9.402-0.554 c1.326-1.576,1.75-4.365-0.891-5.267C19.336,17.287,12.959,16.251,10.154,20.201z">
+                    </path>
+                    <path fill="#212121"
+                        d="M17.615,29.677c-0.502,0-0.873-0.03-1.052-0.069c-0.086-0.019-0.236-0.035-0.434-0.06 c-5.344-0.679-8.053-2.784-8.052-6.255c0.001-2.698,1.17-7.238,8.986-7.32l0.181-0.002c3.444-0.038,6.414-0.068,8.272,1.818 c1.173,1.191,1.712,3,1.647,5.53c-0.044,1.688-0.785,3.147-2.144,4.217C22.785,29.296,19.388,29.677,17.615,29.677z M17.086,17.973 c-7.006,0.074-7.008,4.023-7.008,5.321c-0.001,3.109,3.598,3.926,6.305,4.27c0.273,0.035,0.48,0.063,0.601,0.089 c0.563,0.101,4.68,0.035,6.855-1.732c0.865-0.702,1.299-1.57,1.326-2.653c0.051-1.958-0.301-3.291-1.073-4.075 c-1.262-1.281-3.834-1.255-6.825-1.222L17.086,17.973z">
+                    </path>
+                    <path fill="#e1f5fe"
+                        d="M15.078,19.043c1.957-0.326,5.122-0.529,4.435,1.304c-0.489,1.304-7.185,2.185-7.185,0.652 C12.328,19.467,15.078,19.043,15.078,19.043z">
+                    </path>
+                </svg>
+                <span class="now">now!</span>
+                <span class="play">PLAY MUSIC</span>
+            </button>
+
+            <!-- Music player pops below button on click -->
+            <div id="music-player">
+                <div class="player-top">
+                    <div class="now-playing-label">NOW PLAYING</div>
+                    <div class="song-name" id="song-name">—</div>
+                </div>
+                <div class="player-controls">
+                    <button class="ctrl-btn" id="prev-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn play-pause" id="play-btn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="play-icon">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" id="pause-icon"
+                            style="display:none">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="next-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 18l8.5-6L6 6v12zm2-8.14 5.5 3.89L8 15.14V9.86zM16 6h2v12h-2z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn shuffle-btn" id="shuffle-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
             </div>
         </div>
 
@@ -231,50 +250,61 @@
        SECTION 3 — ABOUT SECTION
   ════════════════════════════════════════ -->
     <section id="about-section">
-        <div class="about-inner">
-            <div class="about-left">
-                <div class="about-label">About Me</div>
-                <div>
-                    <div class="about-big-text">
-                        Builder.<br />Musician.<br /><em>Human.</em>
-                    </div>
-                    <p class="about-bio">
-                        Based in <strong>Butwal, Nepal</strong> — I build things for the web and make music that feels
-                        like late nights. Full-stack developer with a love for <strong>clean systems</strong> and
-                        <strong>raw sound</strong>. Guitar since 2015, code since forever.
-                    </p>
-                </div>
-                <div class="about-location">Butwal, Lumbini Province · Available for work</div>
+        <canvas id="snow-canvas"></canvas>
+
+        <!-- PART 2: Sticky notes board -->
+        <div class="sticky-board" id="sticky-board">
+            <div class="board-title">confessions.</div>
+
+            <div class="sticky-note" id="note-1" style="--rot: -3deg; --top: 20%; --left: 8%;">
+                <div class="sticky-pin"></div>
+                <p class="sticky-text">I started playing guitar
+                    at 15 and haven't stopped since. Music is the
+                    only thing that makes complete sense to me.</p>
+                <span class="sticky-tag">musician</span>
             </div>
-            <div class="about-right">
-                <div class="about-stat-row">
-                    <div class="about-stat">
-                        <div class="stat-number">10<span>+</span></div>
-                        <div class="stat-label">Years Playing Guitar</div>
-                    </div>
-                    <div class="about-stat">
-                        <div class="stat-number">3<span>+</span></div>
-                        <div class="stat-label">Years in Dev</div>
-                    </div>
-                </div>
-                <div class="about-divider"></div>
-                <div class="about-stat-row">
-                    <div class="about-stat wide">
-                        <div>
-                            <div class="stat-number">∞</div>
-                            <div class="stat-label">Things still<br />left to build</div>
-                        </div>
-                        <div class="skill-tags">
-                            <span class="skill-tag">React</span>
-                            <span class="skill-tag">Node.js</span>
-                            <span class="skill-tag">Python</span>
-                            <span class="skill-tag">Networks</span>
-                            <span class="skill-tag">Music</span>
-                            <span class="skill-tag">Systems</span>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="sticky-note" id="note-2" style="--rot: 2deg; --top: 15%; --left: 38%;">
+                <div class="sticky-pin"></div>
+                <p class="sticky-text">I build websites at 2am
+                    with headphones on. The best ideas come when
+                    everyone else is asleep.</p>
+                <span class="sticky-tag">developer</span>
             </div>
+
+            <div class="sticky-note" id="note-3" style="--rot: -1.5deg; --top: 18%; --left: 65%;">
+                <div class="sticky-pin"></div>
+                <p class="sticky-text">Nepal gave me everything —
+                    the mountains, the silence, the hunger to build
+                    something bigger than where I'm from.</p>
+                <span class="sticky-tag">nepal</span>
+            </div>
+
+            <div class="sticky-note" id="note-4" style="--rot: 3deg; --top: 55%; --left: 12%;">
+                <div class="sticky-pin"></div>
+                <p class="sticky-text">IT engineering taught me
+                    that everything is connected. Systems, people,
+                    music — it's all just signals.</p>
+                <span class="sticky-tag">IT engineer</span>
+            </div>
+
+            <div class="sticky-note" id="note-5" style="--rot: -2deg; --top: 52%; --left: 42%;">
+                <div class="sticky-pin"></div>
+                <p class="sticky-text">I am based in Butwal,
+                    Lumbini Province. Small city, big internet
+                    connection, unlimited ambition.</p>
+                <span class="sticky-tag">butwal, nepal</span>
+            </div>
+
+            <div class="sticky-note" id="note-6" style="--rot: 1.5deg; --top: 50%; --left: 68%;">
+                <div class="sticky-pin"></div>
+                <p class="sticky-text"><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                        data-cfemail="b0d2d2d8c5c3d1dc81898986f0d7ddd1d9dc9ed3dfdd">[email&#160;protected]</a> —
+                    reach out. I don't bite. I might send you
+                    a song recommendation though.</p>
+                <span class="sticky-tag">contact</span>
+            </div>
+
         </div>
     </section>
 
@@ -291,10 +321,11 @@
         <div class="nav-links">
             <a href="#about-section">About</a>
             <a href="#work-section">Work</a>
-            <a href="mailto:bbhusal1996@gmail.com">Contact</a>
+            <a href="/cdn-cgi/l/email-protection#294b4b415c5a48451810101f694e44484045074a4644">Contact</a>
         </div>
     </nav>
 
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="assets/js/main.js"></script>
     <div id="dock">
         <div class="dock-inner">
@@ -303,22 +334,15 @@
                     <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
                 </svg>
             </a>
-            <a class="dock-item" href="#homepage" data-label="About">
+            <a class="dock-item" href="#homepage" data-label="Music">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+                </svg>
+            </a>
+            <a class="dock-item" href="#about-section" data-label="About">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                     <path
                         d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8 -9.6-4.8z" />
-                </svg>
-            </a>
-            <a class="dock-item" href="#about-section" data-label="Work">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.12 15.88 0 13.3 0c-1.3 0-2.48.52-3.34 1.36L9 2.32 8.04 1.36C7.18.52 6 0 4.7 0 2.12 0 0 2.12 0 4.7c0 .44.11.86.18 1.3H2C.9 6 0 6.9 0 8v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" />
-                </svg>
-            </a>
-            <a class="dock-item" href="mailto:bbhusal1996@gmail.com" data-label="Email">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
                 </svg>
             </a>
             <a class="dock-item" href="https://www.instagram.com/_notbibekdefinitely/" target="_blank"
@@ -331,12 +355,4 @@
             <a class="dock-item" href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank"
                 data-label="LinkedIn">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                        d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                </svg>
-            </a>
-        </div>
-    </div>
-</body>
-
-</html>
+                    <path d="M20.447
