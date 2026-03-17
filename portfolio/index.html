@@ -18,7 +18,7 @@
 
     <link rel="stylesheet" href="assets/css/style.css" />
     <!-- Monetag Ad Script -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="219735" async data-cfasync="false"></script>
+
 </head>
 
 <body>
@@ -310,22 +310,40 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════════════════════
+       SECTION 4 — HIRE ME
+  ════════════════════════════════════════ -->
+    <section id="hire-me" class="hire-me-section">
+        <svg style="position: absolute; width: 0; height: 0; pointer-events: none;">
+            <defs>
+                <filter id="filter-noise-x">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.000001" numOctaves="1" id="fe-turb-x" />
+                    <feDisplacementMap in="SourceGraphic" scale="40" />
+                </filter>
+                <filter id="filter-noise-y">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.000001" numOctaves="1" id="fe-turb-y" />
+                    <feDisplacementMap in="SourceGraphic" scale="40" />
+                </filter>
+            </defs>
+        </svg>
+        <div class="crosshair-line-x"></div>
+        <div class="crosshair-line-y"></div>
+        <div class="hire-content">
+            <a href="https://www.upwork.com/services/product/development-it-custom-portfolio-website-cinematic-scroll-interactive-ui-design-2032865158668182501?ref=fl_profile" target="_blank" class="crosshair-target">
+                <div class="target-text-wrap">
+                    <span class="text-default">Hire me</span>
+                    <span class="text-hover">UPWORK</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
 
 
     <!-- Hidden audio element -->
     <audio id="audio-player" preload="none"></audio>
 
-    <!-- ═══════════════════════════════════════
-       DARK NAV (VIBE section nav)
-  ════════════════════════════════════════ -->
-    <nav id="main-nav">
-        <div class="nav-logo">BB</div>
-        <div class="nav-links">
-            <a href="#about-section">About</a>
-            <a href="#work-section">Work</a>
-            <a href="/cdn-cgi/l/email-protection#294b4b415c5a48451810101f694e44484045074a4644">Contact</a>
-        </div>
-    </nav>
+    <!-- Dark nav removed -->
 
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="assets/js/main.js"></script>

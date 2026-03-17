@@ -18,47 +18,42 @@ body {
     color: #F2EBE0;
     overflow-x: hidden;
     cursor: none;
-    cursor: url('assets/img/hand.png'), auto;
 }
 
 /* ═══════════════════════════════════════════
-   CUSTOM CURSOR
+   BLOB CURSOR
 ════════════════════════════════════════════ */
-.cursor {
+.blob-container {
     position: fixed;
-    width: 10px;
-    height: 10px;
-    background: #ffffff;
-    border-radius: 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     pointer-events: none;
     z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: transform 0.1s ease, width 0.3s ease,
-        height 0.3s ease, background 0.3s ease;
 }
 
-.cursor-ring {
-    position: fixed;
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50%;
+.blob-main {
     pointer-events: none;
-    z-index: 99998;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    user-select: none;
+    cursor: none;
+}
+
+.blob {
+    position: absolute;
+    will-change: transform;
     transform: translate(-50%, -50%);
-    transition: transform 0.15s ease, width 0.3s ease,
-        height 0.3s ease, opacity 0.3s ease, border-color 0.3s ease;
+    top: 0;
+    left: 0;
 }
 
-.cursor.hovering {
-    width: 20px;
-    height: 20px;
-}
-
-.cursor-ring.hovering {
-    width: 60px;
-    height: 60px;
-    opacity: 0.5;
+.inner-dot {
+    position: absolute;
 }
 
 /* ═══════════════════════════════════════════
@@ -206,54 +201,8 @@ body {
     }
 }
 
-/* DARK NAV (appears over VIBE section) */
-#main-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 4vw;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease;
-}
+/* MAIN NAV REMOVED */
 
-#main-nav.visible {
-    opacity: 1;
-    pointer-events: all;
-}
-
-#main-nav .nav-logo {
-    font-family: "Barlow Condensed", sans-serif;
-    font-weight: 900;
-    font-size: 1.4rem;
-    letter-spacing: 0.1em;
-    color: white;
-}
-
-#main-nav .nav-links {
-    display: flex;
-    gap: 2.5rem;
-}
-
-#main-nav .nav-links a {
-    font-family: "Inter", sans-serif;
-    font-weight: 300;
-    font-size: 0.72rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.55);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-#main-nav .nav-links a:hover {
-    color: white;
-}
 
 /* ═══════════════════════════════════════════
    HOMEPAGE SECTION — Shane cream aesthetic
@@ -1372,4 +1321,80 @@ body {
     opacity: 1;
     transform: translateY(0);
     pointer-events: all;
+}
+
+/* ═══════════════════════════════════════════
+   HIRE ME SECTION (Crosshair)
+════════════════════════════════════════════ */
+.hire-me-section {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #0E1320;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 5;
+}
+
+.crosshair-line-x {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: #00C9C8;
+    pointer-events: none;
+    transform: translateY(50%);
+    opacity: 0;
+    z-index: 10;
+}
+
+.crosshair-line-y {
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    background: #00C9C8;
+    pointer-events: none;
+    transform: translateX(50%);
+    opacity: 0;
+    z-index: 10;
+}
+
+.hire-content {
+    position: relative;
+    z-index: 20;
+}
+
+.crosshair-target {
+    display: inline-block;
+    text-decoration: none;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 900;
+    font-size: clamp(4rem, 10vw, 8rem);
+    color: #F2EBE0;
+    position: relative;
+    overflow: hidden;
+    padding: 1rem 2rem;
+    transition: color 0.3s;
+}
+
+.target-text-wrap {
+    display: flex;
+    flex-direction: column;
+    height: 1em;
+    overflow: hidden;
+}
+
+.target-text-wrap span {
+    line-height: 1em;
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.crosshair-target:hover .text-default {
+    transform: translateY(-100%);
+}
+
+.crosshair-target:hover .text-hover {
+    transform: translateY(-100%);
+    color: #F5FF3C;
 }

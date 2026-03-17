@@ -7,7 +7,6 @@ gsap.config({ force3D: true });
 ════════════════════════════════════════════ */
 const video = document.getElementById("bg-video");
 const loader = document.getElementById("loader");
-const darkNav = document.getElementById("main-nav");
 const hint = document.getElementById("scroll-hint");
 const homeNav = document.getElementById("home-nav");
 const player = document.getElementById("music-player");
@@ -24,42 +23,91 @@ const canvas = document.getElementById("mask-canvas");
 const ctx = canvas.getContext("2d");
 
 /* ═══════════════════════════════════════════
-   CUSTOM CURSOR
+   BLOB CURSOR
 ════════════════════════════════════════════ */
-const cursor = document.createElement("div");
-const ring = document.createElement("div");
-cursor.className = "cursor";
-ring.className = "cursor-ring";
-document.body.appendChild(cursor);
-document.body.appendChild(ring);
+const cursorContainer = document.createElement("div");
+cursorContainer.className = "blob-container";
+// To replace old cursor reference in other scripts gracefully:
+const cursor = cursorContainer; 
+const ring = cursorContainer; 
 
-let mx = 0, my = 0, rx = 0, ry = 0;
-document.addEventListener("mousemove", e => {
-    mx = e.clientX; my = e.clientY;
-    cursor.style.left = mx + "px";
-    cursor.style.top = my + "px";
-});
-// Ring follows with lag
-function animateRing() {
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.style.left = rx + "px";
-    ring.style.top = ry + "px";
-    requestAnimationFrame(animateRing);
+const svgNs = "http://www.w3.org/2000/svg";
+const svg = document.createElementNS(svgNs, "svg");
+svg.style.position = "absolute";
+svg.style.width = "0";
+svg.style.height = "0";
+
+const filter = document.createElementNS(svgNs, "filter");
+filter.id = "blob-filter";
+
+const blur = document.createElementNS(svgNs, "feGaussianBlur");
+blur.setAttribute("in", "SourceGraphic");
+blur.setAttribute("result", "blur");
+blur.setAttribute("stdDeviation", "30");
+
+const colorMatrix = document.createElementNS(svgNs, "feColorMatrix");
+colorMatrix.setAttribute("in", "blur");
+colorMatrix.setAttribute("values", "1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 35 -10");
+
+filter.appendChild(blur);
+filter.appendChild(colorMatrix);
+svg.appendChild(filter);
+cursorContainer.appendChild(svg);
+
+const blobMain = document.createElement("div");
+blobMain.className = "blob-main";
+blobMain.style.filter = "url(#blob-filter)";
+
+const trailCount = 3;
+const sizes = [60, 125, 75];
+const innerSizes = [20, 35, 25];
+const opacities = [0.6, 0.6, 0.6];
+const fillColor = "#5227FF";
+const innerColor = "rgba(255,255,255,0.8)";
+const blobs = [];
+
+for (let i = 0; i < trailCount; i++) {
+    const b = document.createElement("div");
+    b.className = "blob";
+    b.style.width = sizes[i] + "px";
+    b.style.height = sizes[i] + "px";
+    b.style.borderRadius = "50%";
+    b.style.backgroundColor = fillColor;
+    b.style.opacity = opacities[i];
+    b.style.boxShadow = "10px 10px 5px 0 rgba(0,0,0,0.75)";
+    
+    const inner = document.createElement("div");
+    inner.className = "inner-dot";
+    inner.style.width = innerSizes[i] + "px";
+    inner.style.height = innerSizes[i] + "px";
+    inner.style.top = (sizes[i] - innerSizes[i]) / 2 + "px";
+    inner.style.left = (sizes[i] - innerSizes[i]) / 2 + "px";
+    inner.style.backgroundColor = innerColor;
+    inner.style.borderRadius = "50%";
+    
+    b.appendChild(inner);
+    blobMain.appendChild(b);
+    blobs.push(b);
 }
-animateRing();
 
-// Hover effect on interactive elements
-document.querySelectorAll("a, button, .logo-letters, .ctrl-btn").forEach(el => {
-    el.addEventListener("mouseenter", () => {
-        cursor.classList.add("hovering");
-        ring.classList.add("hovering");
-    });
-    el.addEventListener("mouseleave", () => {
-        cursor.classList.remove("hovering");
-        ring.classList.remove("hovering");
+cursorContainer.appendChild(blobMain);
+document.body.appendChild(cursorContainer);
+
+window.addEventListener("mousemove", (e) => {
+    let x = e.clientX;
+    let y = e.clientY;
+    
+    blobs.forEach((el, i) => {
+        const isLead = i === 0;
+        gsap.to(el, {
+            x: x,
+            y: y,
+            duration: isLead ? 0.1 : 0.5,
+            ease: isLead ? "power3.out" : "power1.out"
+        });
     });
 });
+
 
 /* ═══════════════════════════════════════════
    CANVAS MASK — draws dark overlay with
@@ -122,6 +170,7 @@ function startExperience() {
     }, 900);
     buildVibe();
     buildHomepage();
+    initCrosshair();
 }
 video.addEventListener("canplaythrough", startExperience, { once: true });
 setTimeout(startExperience, 3000);
@@ -182,14 +231,7 @@ function buildVibe() {
         onLeaveBack: () => hint.classList.remove("hidden"),
     });
 
-    // Dark nav fades in between VIBE and homepage
-    ScrollTrigger.create({
-        trigger: "#hero",
-        start: "bottom 80%",
-        end: "bottom 20%",
-        onEnter: () => darkNav.classList.add("visible"),
-        onLeaveBack: () => darkNav.classList.remove("visible"),
-    });
+    // Nav removed.
 }
 
 /* ═══════════════════════════════════════════
@@ -202,12 +244,10 @@ function buildHomepage() {
         trigger: "#homepage",
         start: "top 80%",
         onEnter: () => {
-            darkNav.classList.remove("visible");
             cursor.style.background = "#1A1A1A";
             ring.style.borderColor = "rgba(26,26,26,0.4)";
         },
         onLeaveBack: () => {
-            darkNav.classList.add("visible");
             cursor.style.background = "#ffffff";
             ring.style.borderColor = "rgba(255,255,255,0.4)";
         }
@@ -739,3 +779,109 @@ document.querySelectorAll(".sticky-note")
     snowObserver.observe(document.getElementById("about-section"));
     window.addEventListener("resize", resizeSnow);
 })();
+
+/* ═══════════════════════════════════════════
+   CROSSHAIR INTERACTION (Hire Me)
+════════════════════════════════════════════ */
+function initCrosshair() {
+    const hireContainer = document.getElementById("hire-me");
+    if (!hireContainer) return;
+
+    const lineX = hireContainer.querySelector(".crosshair-line-x");
+    const lineY = hireContainer.querySelector(".crosshair-line-y");
+    const filterX = document.getElementById("fe-turb-x");
+    const filterY = document.getElementById("fe-turb-y");
+    const links = hireContainer.querySelectorAll("a");
+
+    let mouse = { x: 0, y: 0 };
+    let renderedStyles = {
+        tx: { previous: 0, current: 0, amt: 0.15 },
+        ty: { previous: 0, current: 0, amt: 0.15 }
+    };
+
+    let isInside = false;
+
+    hireContainer.addEventListener("mousemove", (e) => {
+        const bounds = hireContainer.getBoundingClientRect();
+        mouse.x = e.clientX - bounds.left;
+        mouse.y = e.clientY - bounds.top;
+
+        if (!isInside) {
+            isInside = true;
+            renderedStyles.tx.previous = mouse.x;
+            renderedStyles.ty.previous = mouse.y;
+            gsap.to([lineX, lineY], { opacity: 1, duration: 0.9, ease: "power3.out" });
+        }
+    });
+
+    hireContainer.addEventListener("mouseleave", () => {
+        isInside = false;
+        gsap.to([lineX, lineY], { opacity: 0, duration: 0.5 });
+    });
+
+    const primitiveValues = { turbulence: 0 };
+    const tl = gsap.timeline({
+        paused: true,
+        onStart: () => {
+            if (lineX && lineY) {
+                lineX.style.filter = "url(#filter-noise-x)";
+                lineY.style.filter = "url(#filter-noise-y)";
+            }
+        },
+        onUpdate: () => {
+            if (filterX && filterY) {
+                filterX.setAttribute("baseFrequency", primitiveValues.turbulence);
+                filterY.setAttribute("baseFrequency", primitiveValues.turbulence);
+            }
+        },
+        onComplete: () => {
+            if (lineX && lineY) {
+                lineX.style.filter = "none";
+                lineY.style.filter = "none";
+            }
+        }
+    }).to(primitiveValues, {
+        duration: 0.5,
+        ease: "power1",
+        startAt: { turbulence: 1 },
+        turbulence: 0
+    });
+
+    if(links.length) {
+        links.forEach(link => {
+            link.addEventListener("mouseenter", () => tl.restart());
+            link.addEventListener("mouseleave", () => tl.progress(1).kill());
+        });
+    }
+
+    function renderCrosshair() {
+        if (isInside) {
+            renderedStyles.tx.current = mouse.x;
+            renderedStyles.ty.current = mouse.y;
+
+            renderedStyles.tx.previous += (renderedStyles.tx.current - renderedStyles.tx.previous) * renderedStyles.tx.amt;
+            renderedStyles.ty.previous += (renderedStyles.ty.current - renderedStyles.ty.previous) * renderedStyles.ty.amt;
+
+            if (lineY && lineX) {
+                gsap.set(lineY, { x: renderedStyles.tx.previous });
+                gsap.set(lineX, { y: renderedStyles.ty.previous });
+            }
+        }
+        requestAnimationFrame(renderCrosshair);
+    }
+    renderCrosshair();
+
+    // Parallax Reveal for Hire Me Section
+    gsap.fromTo(hireContainer,
+        { y: 150, opacity: 0 },
+        {
+            y: 0, opacity: 1,
+            scrollTrigger: {
+                trigger: hireContainer,
+                start: "top 85%",
+                end: "top 25%",
+                scrub: 1
+            }
+        }
+    );
+}
