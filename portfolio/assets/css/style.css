@@ -20,17 +20,35 @@ body {
     cursor: none;
 }
 
+/* Restore normal cursor on all interactive elements
+   so the browser default pointer shows on hover */
+a,
+button,
+[role="button"],
+.dock-item,
+.hire-target,
+.connect-btn,
+.ctrl-btn,
+.social-icon,
+.sticky-note,
+input,
+textarea,
+select,
+label {
+    cursor: pointer;
+}
+
 /* ═══════════════════════════════════════════
-   TEXT CURSOR — vanilla JS port of ReactBits
-   Spawns "Lazy" labels that follow the mouse
-   and float/fade out
+   TEXT CURSOR — "Lazy" trail
+   pointer-events: none on container so it
+   never blocks clicks or hover states below
 ════════════════════════════════════════════ */
 .text-cursor-container {
     position: fixed;
     inset: 0;
     pointer-events: none;
-    z-index: 99998;
-    /* just below blob cursor */
+    /* NEVER blocks anything underneath */
+    z-index: 99997;
     overflow: hidden;
 }
 
@@ -46,9 +64,12 @@ body {
     color: #F5FF3C;
     text-shadow: 0 0 12px rgba(245, 255, 60, 0.6);
     pointer-events: none;
+    /* never intercepts mouse events */
     transform: translate(-50%, -50%);
     transition: opacity 0.5s ease, transform 0.5s ease;
     opacity: 0;
+    mix-blend-mode: difference;
+    /* blends over text without obscuring it */
 }
 
 .text-cursor-item.alive {
@@ -58,79 +79,6 @@ body {
 .text-cursor-item.dying {
     opacity: 0;
     transform: translate(-50%, -60%) scale(0.6);
-}
-
-/* ═══════════════════════════════════════════
-   BLOB CURSOR (kept as layer above text trail)
-════════════════════════════════════════════ */
-.blob-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 99999;
-}
-
-.blob-main {
-    pointer-events: none;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: transparent;
-    user-select: none;
-    cursor: none;
-}
-
-@keyframes blobColorCycle {
-    0% {
-        background-color: #5227FF;
-    }
-
-    25% {
-        background-color: #FF2A54;
-    }
-
-    50% {
-        background-color: #F5FF3C;
-    }
-
-    75% {
-        background-color: #00C9C8;
-    }
-
-    100% {
-        background-color: #5227FF;
-    }
-}
-
-.blob {
-    position: absolute;
-    will-change: transform;
-    transform: translate(-50%, -50%);
-    top: 0;
-    left: 0;
-    filter: blur(15px);
-    animation: blobColorCycle 8s infinite alternate ease-in-out;
-    contain: layout style;
-}
-
-.blob:nth-child(1) {
-    animation-delay: 0s;
-}
-
-.blob:nth-child(2) {
-    animation-delay: -2.6s;
-}
-
-.blob:nth-child(3) {
-    animation-delay: -5.3s;
-}
-
-.inner-dot {
-    position: absolute;
 }
 
 /* ═══════════════════════════════════════════
@@ -327,14 +275,12 @@ body {
     opacity: 0.6;
 }
 
-/* ── HERO CONTENT ── */
 .home-hero {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     padding: 0 4vw;
     gap: 4vw;
-    margin-bottom: 0;
     position: relative;
     z-index: 2;
     min-height: calc(100vh - 58px);
@@ -1157,7 +1103,6 @@ body {
 
 /* ═══════════════════════════════════════════
    HIRE ME SECTION
-   FIX: text swap on hover now works correctly
 ════════════════════════════════════════════ */
 .hire-me-section {
     position: relative;
@@ -1187,9 +1132,10 @@ body {
     position: relative;
     padding: 1rem 2rem;
     overflow: hidden;
+    /* Ensure it sits above text cursor container */
+    z-index: 21;
 }
 
-/* Stack both texts, swap on hover */
 .target-text-wrap {
     position: relative;
     display: block;
@@ -1230,7 +1176,6 @@ body {
     opacity: 1;
 }
 
-/* Upwork badge that appears on hover */
 .hire-upwork-badge {
     position: absolute;
     bottom: -3rem;
@@ -1250,9 +1195,11 @@ body {
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none;
     text-decoration: none;
+    z-index: 21;
 }
 
 .hire-content:hover .hire-upwork-badge {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
 }

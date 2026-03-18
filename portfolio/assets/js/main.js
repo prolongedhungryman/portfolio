@@ -25,15 +25,26 @@ const canvas = document.getElementById("mask-canvas");
 const ctx = canvas.getContext("2d");
 
 /* ═══════════════════════════════════════════
-   TEXT CURSOR — vanilla port of ReactBits
-   Spawns "Lazy" labels trailing the mouse,
-   each floats and fades out independently.
+   TEXT CURSOR — "Lazy" trail
+   • Blob cursor completely removed
+   • Trail hides when hovering over any text,
+     heading, button, link, or input element
 ════════════════════════════════════════════ */
 (function () {
     const LABEL = "Lazy";
-    const SPACING = 90;       // px between spawns
-    const MAX = 6;        // max live labels
-    const LIFETIME = 900;      // ms before fade starts
+    const SPACING = 90;
+    const MAX = 6;
+    const LIFETIME = 900;
+
+    // Elements where cursor trail should disappear
+    const HIDE_SELECTORS = [
+        "a", "button", "h1", "h2", "h3", "h4", "h5", "h6",
+        "p", "span", "li", "label", "input", "textarea",
+        ".hire-target", ".connect-btn", ".dock-item",
+        ".sticky-text", ".board-title", ".cr-base-layer",
+        ".cr-reveal-layer", ".marquee-track", "#scroll-hint",
+        "#lazy-text", "#ek-text", ".social-icon"
+    ].join(", ");
 
     const container = document.createElement("div");
     container.className = "text-cursor-container";
@@ -41,10 +52,32 @@ const ctx = canvas.getContext("2d");
 
     let lastX = 0, lastY = 0;
     let items = [];
+    let hidden = false;
+
+    // Hide trail when over interactive/text elements
+    document.addEventListener("mouseover", (e) => {
+        if (e.target.closest(HIDE_SELECTORS)) {
+            hidden = true;
+            // fade out existing items immediately
+            items.forEach(item => {
+                item.el.classList.remove("alive");
+                item.el.classList.add("dying");
+            });
+        }
+    }, { passive: true });
+
+    document.addEventListener("mouseout", (e) => {
+        if (e.target.closest(HIDE_SELECTORS)) {
+            hidden = false;
+            // reset lastX/Y so no burst of items on re-enter
+            lastX = 0; lastY = 0;
+        }
+    }, { passive: true });
 
     function spawnItem(x, y) {
+        if (hidden) return;
+
         if (items.length >= MAX) {
-            // kill oldest
             const old = items.shift();
             old.el.remove();
         }
@@ -53,23 +86,17 @@ const ctx = canvas.getContext("2d");
         el.className = "text-cursor-item";
         el.textContent = LABEL;
 
-        // slight random rotation/offset
-        const rx = (Math.random() - 0.5) * 14;
-        const ry = (Math.random() - 0.5) * 14;
         const rot = (Math.random() - 0.5) * 16;
         el.style.left = x + "px";
         el.style.top = y + "px";
         el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
 
         container.appendChild(el);
-
-        // trigger alive state next frame
         requestAnimationFrame(() => el.classList.add("alive"));
 
-        const item = { el, x, y };
+        const item = { el };
         items.push(item);
 
-        // start dying after LIFETIME
         setTimeout(() => {
             el.classList.remove("alive");
             el.classList.add("dying");
@@ -78,74 +105,30 @@ const ctx = canvas.getContext("2d");
                 items = items.filter(i => i !== item);
             }, 500);
         }, LIFETIME);
-
-        return item;
     }
 
     window.addEventListener("mousemove", (e) => {
+        if (hidden) return;
+
         const dx = e.clientX - lastX;
         const dy = e.clientY - lastY;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist >= SPACING) {
+        if (dist >= SPACING || (lastX === 0 && lastY === 0)) {
             spawnItem(e.clientX, e.clientY);
             lastX = e.clientX;
             lastY = e.clientY;
         }
     }, { passive: true });
-})();
 
-
-/* ═══════════════════════════════════════════
-   BLOB CURSOR
-════════════════════════════════════════════ */
-const cursorContainer = document.createElement("div");
-cursorContainer.className = "blob-container";
-
-const blobMain = document.createElement("div");
-blobMain.className = "blob-main";
-
-const sizes = [60, 125, 75];
-const innerSizes = [20, 35, 25];
-const opacities = [0.8, 0.6, 0.7];
-const blobs = [];
-
-for (let i = 0; i < 3; i++) {
-    const b = document.createElement("div");
-    b.className = "blob";
-    b.style.width = sizes[i] + "px";
-    b.style.height = sizes[i] + "px";
-    b.style.borderRadius = "50%";
-    b.style.opacity = opacities[i];
-    b.style.boxShadow = "10px 10px 5px 0 rgba(0,0,0,0.75)";
-
-    const inner = document.createElement("div");
-    inner.className = "inner-dot";
-    inner.style.width = innerSizes[i] + "px";
-    inner.style.height = innerSizes[i] + "px";
-    inner.style.top = (sizes[i] - innerSizes[i]) / 2 + "px";
-    inner.style.left = (sizes[i] - innerSizes[i]) / 2 + "px";
-    inner.style.backgroundColor = "rgba(255,255,255,0.8)";
-    inner.style.borderRadius = "50%";
-    inner.style.position = "absolute";
-
-    b.appendChild(inner);
-    blobMain.appendChild(b);
-    blobs.push(b);
-}
-
-cursorContainer.appendChild(blobMain);
-document.body.appendChild(cursorContainer);
-
-window.addEventListener("mousemove", (e) => {
-    blobs.forEach((el, i) => {
-        gsap.to(el, {
-            x: e.clientX, y: e.clientY,
-            duration: i === 0 ? 0.1 : 0.5,
-            ease: i === 0 ? "power3.out" : "power1.out"
+    // Hide trail when cursor leaves window
+    document.addEventListener("mouseleave", () => {
+        items.forEach(item => {
+            item.el.classList.remove("alive");
+            item.el.classList.add("dying");
         });
-    });
-}, { passive: true });
+    }, { passive: true });
+})();
 
 
 /* ═══════════════════════════════════════════
@@ -232,7 +215,6 @@ function _flushSeek() {
 const homeBgVideo = document.getElementById("homepage-bg-video");
 if (homeBgVideo) {
     homeBgVideo.load();
-
     new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -384,7 +366,6 @@ function initCursorReveal() {
         dot.style.left = e.clientX + "px";
         dot.style.top = e.clientY + "px";
         dot.classList.add("on");
-        cursorContainer.style.opacity = "0";
     }, { passive: true });
 
     scene.addEventListener("mouseleave", (e) => {
@@ -395,7 +376,6 @@ function initCursorReveal() {
         reveal.style.clipPath = `circle(0px at ${(e.clientX - rect.left).toFixed(1)}px ${(e.clientY - rect.top).toFixed(1)}px)`;
         setTimeout(() => { reveal.style.transition = "none"; }, 500);
         dot.classList.remove("on");
-        cursorContainer.style.opacity = "1";
     });
 }
 
