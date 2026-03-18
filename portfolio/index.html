@@ -10,8 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap" rel="stylesheet" />
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;0,900;1,700;1,900&family=Barlow+Condensed:wght@900&family=Inter:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;0,900;1,700;1,900&family=Barlow+Condensed:wght@900&family=Inter:wght@300;400;500;600;700&display=swap"
         rel="stylesheet" />
+    <!-- Bebas Neue for Polecat-style large display headings -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -44,17 +46,12 @@
 
     <!-- SECTION 2 — HOMEPAGE -->
     <section id="homepage">
-
-        <!-- FIX: preload="metadata" + poster for instant display -->
         <video id="homepage-bg-video" muted loop playsinline preload="metadata"
             poster="assets/video/secondbg-poster.jpg">
             <source src="assets/video/secondbg.mp4" type="video/mp4" />
         </video>
 
-        <!-- HERO CONTENT -->
         <div class="home-hero">
-
-            <!-- LEFT COLUMN -->
             <div class="headline-wrap">
                 <div class="cr-scene" id="cr-scene">
                     <div class="cr-base-layer">
@@ -68,18 +65,15 @@
                         <span>LAZYY</span>
                     </div>
                 </div>
-
                 <div class="headline-sub reveal-up">
                     <p>Bibek Bhusal — Nepal</p>
                 </div>
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div class="hero-right-col">
                 <div class="portrait-circle rhumb-reveal">
                     <img src="assets/potrait/potrait.jpeg" alt="Bibek Bhusal" class="portrait-img" />
                 </div>
-
                 <div class="connect-wrap rhumb-reveal">
                     <button class="connect-btn" id="connect-btn">
                         <span>Let's Connect</span>
@@ -112,7 +106,6 @@
             </div>
         </div>
 
-        <!-- MARQUEE STRIP -->
         <div class="marquee-strip">
             <div class="marquee-track">
                 <span>Bibek Bhusal</span><span class="dot">·</span>
@@ -125,7 +118,6 @@
                 <a href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank">LinkedIn ↗</a><span
                     class="dot">·</span>
                 <span>bibekbhusal404@gmail.com</span><span class="dot">·</span>
-                <!-- Duplicate for seamless loop -->
                 <span>Bibek Bhusal</span><span class="dot">·</span>
                 <span>Nepal</span><span class="dot">·</span>
                 <span>Developer</span><span class="dot">·</span>
@@ -139,7 +131,6 @@
             </div>
         </div>
 
-        <!-- Music trigger + player -->
         <div id="music-trigger-wrap">
             <button id="music-trigger-btn" aria-label="Play music">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="36px" height="36px">
@@ -163,7 +154,7 @@
                         d="M10.154,20.201c0.261,2.059-0.196,3.351,2.543,3.546s8.076,1.022,9.402-0.554 c1.326-1.576,1.75-4.365-0.891-5.267C19.336,17.287,12.959,16.251,10.154,20.201z">
                     </path>
                     <path fill="#212121"
-                        d="M17.615,29.677c-0.502,0-0.873-0.03-1.052-0.069c-0.086-0.019-0.236-0.035-0.434-0.06 c-5.344-0.679-8.053-2.784-8.052-6.255c0.001-2.698,1.17-7.238,8.986-7.32l0.181-0.002c3.444-0.038,6.414-0.068,8.272,1.818 c1.173,1.191,1.712,3,1.647,5.53c-0.044,1.688-0.785,3.147-2.144,4.217C22.785,29.296,19.388,29.677,17.615,29.677z M17.086,17.973 c-7.006,0.074-7.008,4.023-7.008,5.321c-0.001,3.109,3.598,3.926,6.305,4.27c0.273,0.035,0.48,0.063,0.601,0.089 c0.563,0.101,4.68,0.035,6.855-1.732c0.865-0.702,1.299-1.57,1.326-2.653c0.051-1.958-0.301-3.291-1.073-4.075 c-1.262-1.281-3.834-1.255-6.825-1.222L17.086,17.973z">
+                        d="M17.615,29.677c-0.502,0-0.873-0.03-1.052-0.069c-0.086-0.019-0.236-0.035-0.434-0.06 c-5.344-0.679-8.053-2.784-8.052-6.255c0.001-2.698,1.17-7.238,8.986-7.32l0.181-0.002c3.444-0.038,6.414-0.068,8.272,1.818 c1.173,1.191,1.712,3,1.647,5.53c-0.044,1.688-0.785,3.147-2.144,4.217C22.785,29.296,19.388,29.677,17.615,29.677z">
                     </path>
                     <path fill="#e1f5fe"
                         d="M15.078,19.043c1.957-0.326,5.122-0.529,4.435,1.304c-0.489,1.304-7.185,2.185-7.185,0.652 C12.328,19.467,15.078,19.043,15.078,19.043z">
@@ -210,7 +201,6 @@
                 </div>
             </div>
         </div>
-
     </section>
 
     <!-- SECTION 3 — ABOUT -->
@@ -218,42 +208,36 @@
         <canvas id="snow-canvas"></canvas>
         <div class="sticky-board" id="sticky-board">
             <div class="board-title">confessions.</div>
-
             <div class="sticky-note" id="note-1" style="--rot: -3deg; --top: 20%; --left: 8%;">
                 <div class="sticky-pin"></div>
                 <p class="sticky-text">I started playing guitar at 15 and haven't stopped since. Music is the only thing
                     that makes complete sense to me.</p>
                 <span class="sticky-tag">musician</span>
             </div>
-
             <div class="sticky-note" id="note-2" style="--rot: 2deg; --top: 15%; --left: 38%;">
                 <div class="sticky-pin"></div>
                 <p class="sticky-text">I build websites at 2am with headphones on. The best ideas come when everyone
                     else is asleep.</p>
                 <span class="sticky-tag">developer</span>
             </div>
-
             <div class="sticky-note" id="note-3" style="--rot: -1.5deg; --top: 18%; --left: 65%;">
                 <div class="sticky-pin"></div>
                 <p class="sticky-text">Nepal gave me everything — the mountains, the silence, the hunger to build
                     something bigger than where I'm from.</p>
                 <span class="sticky-tag">nepal</span>
             </div>
-
             <div class="sticky-note" id="note-4" style="--rot: 3deg; --top: 55%; --left: 12%;">
                 <div class="sticky-pin"></div>
                 <p class="sticky-text">IT engineering taught me that everything is connected. Systems, people, music —
                     it's all just signals.</p>
                 <span class="sticky-tag">IT engineer</span>
             </div>
-
             <div class="sticky-note" id="note-5" style="--rot: -2deg; --top: 52%; --left: 42%;">
                 <div class="sticky-pin"></div>
                 <p class="sticky-text">I am based in Butwal, Lumbini Province. Small city, big internet connection,
                     unlimited ambition.</p>
                 <span class="sticky-tag">butwal, nepal</span>
             </div>
-
             <div class="sticky-note" id="note-6" style="--rot: 1.5deg; --top: 50%; --left: 68%;">
                 <div class="sticky-pin"></div>
                 <p class="sticky-text">bibekbhusal404@gmail.com — reach out. I don't bite. I might send you a song
@@ -263,26 +247,98 @@
         </div>
     </section>
 
-    <!-- SECTION 4 — HIRE ME (fixed: hover swap + Upwork badge) -->
+    <!-- ═══════════════════════════════════════
+         SECTION 4 — HIRE ME (Polecat-inspired)
+         Two sub-pages:
+         4a: Contact form (Starting a New Journey)
+         4b: Social links (full-screen typography)
+         Menu button top-right, only visible here.
+         Menu opens full-screen overlay with nav links.
+    ════════════════════════════════════════ -->
     <section id="hire-me" class="hire-me-section">
-        <div class="hire-content">
-            <a href="https://www.upwork.com/services/product/development-it-custom-portfolio-website-cinematic-scroll-interactive-ui-design-2032865158668182501?ref=fl_profile"
-                target="_blank" class="hire-target">
-                <div class="target-text-wrap">
-                    <span class="text-default">Hire me</span>
-                    <span class="text-hover">UPWORK</span>
+
+        <!-- MENU BUTTON — only on hire-me section -->
+        <button id="hire-menu-btn" class="hire-menu-btn" aria-label="Menu">
+            MENU <span class="hire-menu-eq">=</span>
+        </button>
+
+        <!-- FULL-SCREEN MENU OVERLAY -->
+        <div id="hire-menu-overlay" class="hire-menu-overlay">
+            <div class="hire-menu-overlay-inner">
+                <button id="hire-menu-close" class="hire-menu-close" aria-label="Close menu">
+                    CLOSE <span>×</span>
+                </button>
+                <nav class="hire-menu-nav">
+                    <a href="#hero" class="hire-menu-link" data-index="01">HOME</a>
+                    <a href="#homepage" class="hire-menu-link" data-index="02">MUSIC</a>
+                    <a href="#about-section" class="hire-menu-link" data-index="03">ABOUT</a>
+                    <a href="#hire-me" class="hire-menu-link" data-index="04">HIRE ME</a>
+                </nav>
+                <div class="hire-menu-footer">
+                    <span>bibekbhusal404@gmail.com</span>
+                    <span>Nepal — Available Worldwide</span>
                 </div>
-            </a>
-            <a href="https://www.upwork.com/services/product/development-it-custom-portfolio-website-cinematic-scroll-interactive-ui-design-2032865158668182501?ref=fl_profile"
-                target="_blank" class="hire-upwork-badge">
-                ↗ View on Upwork
-            </a>
+            </div>
         </div>
+
+        <!-- PAGE 4a — CONTACT FORM -->
+        <div class="hire-page hire-page-contact" id="hire-contact">
+            <div class="hire-contact-inner">
+                <h1 class="hire-heading">
+                    STARTING<br>A NEW<br>JOURNEY
+                </h1>
+                <p class="hire-subtext">Share your idea, and I'll do my best to navigate you through the development
+                    process</p>
+
+                <div class="hire-form">
+                    <div class="hire-field">
+                        <label class="hire-field-label">Project</label>
+                        <textarea class="hire-textarea" placeholder="Tell me about your project, timeline and budget..."
+                            rows="6"></textarea>
+                    </div>
+                    <div class="hire-field">
+                        <label class="hire-field-label">Email</label>
+                        <input type="email" class="hire-input" placeholder="your@email.com" />
+                    </div>
+                    <a href="https://www.upwork.com/services/product/development-it-custom-portfolio-website-cinematic-scroll-interactive-ui-design-2032865158668182501?ref=fl_profile"
+                        target="_blank" class="hire-submit-btn">
+                        HIRE ON UPWORK ↗
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4b — SOCIAL LINKS (scroll down from 4a) -->
+        <div class="hire-page hire-page-social" id="hire-social">
+            <div class="hire-social-inner">
+                <a href="https://www.instagram.com/_notbibekdefinitely/" target="_blank" class="hire-social-link">
+                    <span class="hire-social-num">01</span>
+                    INSTAGRAM
+                    <span class="hire-social-arrow">↗</span>
+                </a>
+                <a href="https://www.linkedin.com/in/bibek-bhusal-494737195/" target="_blank" class="hire-social-link">
+                    <span class="hire-social-num">02</span>
+                    LINKEDIN
+                    <span class="hire-social-arrow">↗</span>
+                </a>
+                <a href="https://github.com/" target="_blank" class="hire-social-link">
+                    <span class="hire-social-num">03</span>
+                    GITHUB
+                    <span class="hire-social-arrow">↗</span>
+                </a>
+                <a href="https://www.upwork.com/services/product/development-it-custom-portfolio-website-cinematic-scroll-interactive-ui-design-2032865158668182501?ref=fl_profile"
+                    target="_blank" class="hire-social-link">
+                    <span class="hire-social-num">04</span>
+                    UPWORK
+                    <span class="hire-social-arrow">↗</span>
+                </a>
+            </div>
+        </div>
+
     </section>
 
     <audio id="audio-player" preload="none"></audio>
 
-    <!-- cursor-reveal.js REMOVED — logic is inside main.js -->
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
     <script src="assets/js/main.js"></script>
 

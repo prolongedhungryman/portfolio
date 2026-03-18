@@ -23,12 +23,10 @@ const pauseIcon = document.getElementById("pause-icon");
 const progress = document.getElementById("progress-fill");
 const canvas = document.getElementById("mask-canvas");
 const ctx = canvas.getContext("2d");
+const dock = document.getElementById("dock");
 
 /* ═══════════════════════════════════════════
    TEXT CURSOR — "Lazy" trail
-   • Blob cursor completely removed
-   • Trail hides when hovering over any text,
-     heading, button, link, or input element
 ════════════════════════════════════════════ */
 (function () {
     const LABEL = "Lazy";
@@ -36,97 +34,63 @@ const ctx = canvas.getContext("2d");
     const MAX = 6;
     const LIFETIME = 900;
 
-    // Elements where cursor trail should disappear
     const HIDE_SELECTORS = [
         "a", "button", "h1", "h2", "h3", "h4", "h5", "h6",
         "p", "span", "li", "label", "input", "textarea",
-        ".hire-target", ".connect-btn", ".dock-item",
-        ".sticky-text", ".board-title", ".cr-base-layer",
-        ".cr-reveal-layer", ".marquee-track", "#scroll-hint",
-        "#lazy-text", "#ek-text", ".social-icon"
+        ".hire-social-link", ".hire-menu-link", ".hire-heading",
+        ".hire-subtext", ".hire-submit-btn", ".connect-btn",
+        ".dock-item", ".sticky-text", ".board-title",
+        ".cr-base-layer", ".cr-reveal-layer", ".marquee-track",
+        "#scroll-hint", "#lazy-text", "#ek-text", ".social-icon"
     ].join(", ");
 
     const container = document.createElement("div");
     container.className = "text-cursor-container";
     document.body.appendChild(container);
 
-    let lastX = 0, lastY = 0;
-    let items = [];
-    let hidden = false;
+    let lastX = 0, lastY = 0, items = [], hidden = false;
 
-    // Hide trail when over interactive/text elements
     document.addEventListener("mouseover", (e) => {
         if (e.target.closest(HIDE_SELECTORS)) {
             hidden = true;
-            // fade out existing items immediately
-            items.forEach(item => {
-                item.el.classList.remove("alive");
-                item.el.classList.add("dying");
-            });
+            items.forEach(i => { i.el.classList.remove("alive"); i.el.classList.add("dying"); });
         }
     }, { passive: true });
 
     document.addEventListener("mouseout", (e) => {
-        if (e.target.closest(HIDE_SELECTORS)) {
-            hidden = false;
-            // reset lastX/Y so no burst of items on re-enter
-            lastX = 0; lastY = 0;
-        }
+        if (e.target.closest(HIDE_SELECTORS)) { hidden = false; lastX = 0; lastY = 0; }
     }, { passive: true });
 
     function spawnItem(x, y) {
         if (hidden) return;
-
-        if (items.length >= MAX) {
-            const old = items.shift();
-            old.el.remove();
-        }
-
+        if (items.length >= MAX) { const old = items.shift(); old.el.remove(); }
         const el = document.createElement("div");
         el.className = "text-cursor-item";
         el.textContent = LABEL;
-
         const rot = (Math.random() - 0.5) * 16;
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-        el.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
-
+        el.style.left = x + "px"; el.style.top = y + "px";
+        el.style.transform = `translate(-50%,-50%) rotate(${rot}deg)`;
         container.appendChild(el);
         requestAnimationFrame(() => el.classList.add("alive"));
-
         const item = { el };
         items.push(item);
-
         setTimeout(() => {
-            el.classList.remove("alive");
-            el.classList.add("dying");
-            setTimeout(() => {
-                el.remove();
-                items = items.filter(i => i !== item);
-            }, 500);
+            el.classList.remove("alive"); el.classList.add("dying");
+            setTimeout(() => { el.remove(); items = items.filter(i => i !== item); }, 500);
         }, LIFETIME);
     }
 
     window.addEventListener("mousemove", (e) => {
         if (hidden) return;
-
-        const dx = e.clientX - lastX;
-        const dy = e.clientY - lastY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-
-        if (dist >= SPACING || (lastX === 0 && lastY === 0)) {
+        const dx = e.clientX - lastX, dy = e.clientY - lastY;
+        if (Math.sqrt(dx * dx + dy * dy) >= SPACING || (lastX === 0 && lastY === 0)) {
             spawnItem(e.clientX, e.clientY);
-            lastX = e.clientX;
-            lastY = e.clientY;
+            lastX = e.clientX; lastY = e.clientY;
         }
     }, { passive: true });
 
-    // Hide trail when cursor leaves window
     document.addEventListener("mouseleave", () => {
-        items.forEach(item => {
-            item.el.classList.remove("alive");
-            item.el.classList.add("dying");
-        });
+        items.forEach(i => { i.el.classList.remove("alive"); i.el.classList.add("dying"); });
     }, { passive: true });
 })();
 
@@ -134,14 +98,11 @@ const ctx = canvas.getContext("2d");
 /* ═══════════════════════════════════════════
    CANVAS MASK
 ════════════════════════════════════════════ */
-let currentScale = 1;
-let currentDark = 1;
-let maskRafId = null;
+let currentScale = 1, currentDark = 1, maskRafId = null;
 
 function sizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    const w = window.innerWidth, h = window.innerHeight;
     canvas.width = Math.round(w * dpr);
     canvas.height = Math.round(h * dpr);
     canvas.style.width = w + "px";
@@ -158,18 +119,14 @@ function drawMask(scale, darkOpacity) {
 
 function _flushMask() {
     maskRafId = null;
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-
+    const w = window.innerWidth, h = window.innerHeight;
     ctx.clearRect(0, 0, w, h);
     ctx.globalCompositeOperation = "source-over";
     ctx.fillStyle = `rgba(0,180,180,${currentDark})`;
     ctx.fillRect(0, 0, w, h);
-
     ctx.globalCompositeOperation = "destination-out";
     ctx.fillStyle = "rgba(0,0,0,1)";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
     ctx.font = `900 ${(w * 0.26) * currentScale}px "Barlow Condensed", sans-serif`;
     ctx.fillText("VIBE", w / 2, h / 2);
     ctx.globalCompositeOperation = "source-over";
@@ -183,10 +140,9 @@ window.addEventListener("resize", () => {
 
 
 /* ═══════════════════════════════════════════
-   VIDEO SCRUB — rAF gated
+   VIDEO SCRUB
 ════════════════════════════════════════════ */
-let pendingSeekTime = null;
-let seekRafId = null;
+let pendingSeekTime = null, seekRafId = null;
 
 function scheduleSeek(t) {
     pendingSeekTime = t;
@@ -196,14 +152,8 @@ function scheduleSeek(t) {
 function _flushSeek() {
     seekRafId = null;
     if (pendingSeekTime === null) return;
-    const t = pendingSeekTime;
-    pendingSeekTime = null;
-    if (
-        video.readyState >= 2 &&
-        video.duration &&
-        isFinite(video.duration) &&
-        Math.abs(video.currentTime - t) > 0.1
-    ) {
+    const t = pendingSeekTime; pendingSeekTime = null;
+    if (video.readyState >= 2 && video.duration && isFinite(video.duration) && Math.abs(video.currentTime - t) > 0.1) {
         video.currentTime = t;
     }
 }
@@ -217,13 +167,8 @@ if (homeBgVideo) {
     homeBgVideo.load();
     new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                homeBgVideo.play().catch(() => { });
-                homeBgVideo.classList.add("active");
-            } else {
-                homeBgVideo.pause();
-                homeBgVideo.classList.remove("active");
-            }
+            if (entry.isIntersecting) { homeBgVideo.play().catch(() => { }); homeBgVideo.classList.add("active"); }
+            else { homeBgVideo.pause(); homeBgVideo.classList.remove("active"); }
         });
     }, { threshold: 0.05 }).observe(document.getElementById("homepage"));
 }
@@ -242,6 +187,7 @@ function startExperience() {
     buildVibe();
     buildHomepage();
     initCursorReveal();
+    initHireMe();
 }
 
 Promise.all([
@@ -260,48 +206,31 @@ setTimeout(startExperience, 3500);
    VIBE SECTION
 ════════════════════════════════════════════ */
 function buildVibe() {
-    const vibeProxy = { scale: 1 };
-    const darkProxy = { opacity: 1 };
-
-    sizeCanvas();
-    currentScale = 1; currentDark = 1;
-    _flushMask();
+    const vibeProxy = { scale: 1 }, darkProxy = { opacity: 1 };
+    sizeCanvas(); currentScale = 1; currentDark = 1; _flushMask();
 
     const tl = gsap.timeline({
         scrollTrigger: {
-            trigger: "#hero",
-            start: "top top",
-            end: "+=300%",
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            fastScrollEnd: true,
+            trigger: "#hero", start: "top top", end: "+=300%",
+            scrub: 1, pin: true, anticipatePin: 1,
+            invalidateOnRefresh: true, fastScrollEnd: true,
             onUpdate: (self) => {
-                if (video.duration && isFinite(video.duration))
-                    scheduleSeek(self.progress * video.duration);
+                if (video.duration && isFinite(video.duration)) scheduleSeek(self.progress * video.duration);
             },
             onLeaveBack: () => {
                 vibeProxy.scale = 1; darkProxy.opacity = 1;
                 if (maskRafId) { cancelAnimationFrame(maskRafId); maskRafId = null; }
-                currentScale = 1; currentDark = 1;
-                _flushMask();
+                currentScale = 1; currentDark = 1; _flushMask();
                 gsap.set("#lazy-text", { x: 0, opacity: 0.85 });
                 gsap.set("#ek-text", { x: 0, opacity: 0.85 });
             }
         }
     });
 
-    tl.fromTo(vibeProxy, { scale: 1 }, {
-        scale: 14, ease: "none", duration: 1,
-        onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity)
-    }, 0);
+    tl.fromTo(vibeProxy, { scale: 1 }, { scale: 14, ease: "none", duration: 1, onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity) }, 0);
     tl.fromTo("#lazy-text", { x: 0, opacity: 0.85 }, { x: -160, opacity: 0, ease: "none", duration: 0.4 }, 0);
     tl.fromTo("#ek-text", { x: 0, opacity: 0.85 }, { x: 160, opacity: 0, ease: "none", duration: 0.4 }, 0);
-    tl.fromTo(darkProxy, { opacity: 1 }, {
-        opacity: 0, ease: "none", duration: 0.3,
-        onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity)
-    }, 0.7);
+    tl.fromTo(darkProxy, { opacity: 1 }, { opacity: 0, ease: "none", duration: 0.3, onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity) }, 0.7);
 
     ScrollTrigger.create({
         trigger: "#hero", start: "top+=10 top",
@@ -337,11 +266,105 @@ function buildHomepage() {
 
     ScrollTrigger.create({
         trigger: "#homepage", start: "top 80%",
-        onEnter: () => document.getElementById("dock").classList.add("visible"),
-        onLeaveBack: () => document.getElementById("dock").classList.remove("visible"),
+        onEnter: () => dock.classList.add("visible"),
+        onLeaveBack: () => dock.classList.remove("visible"),
     });
 
     ScrollTrigger.refresh();
+}
+
+
+/* ═══════════════════════════════════════════
+   HIRE ME — Menu, entrance, dock hide/show
+════════════════════════════════════════════ */
+function initHireMe() {
+    const menuBtn = document.getElementById("hire-menu-btn");
+    const overlay = document.getElementById("hire-menu-overlay");
+    const closeBtn = document.getElementById("hire-menu-close");
+    const menuLinks = document.querySelectorAll(".hire-menu-link");
+    const hireSection = document.getElementById("hire-me");
+
+    /* ── Menu button: only visible when hire-me is in viewport ── */
+    const menuBtnObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            menuBtn.style.opacity = entry.isIntersecting ? "1" : "0";
+            menuBtn.style.pointerEvents = entry.isIntersecting ? "auto" : "none";
+        });
+    }, { threshold: 0.05 });
+    menuBtnObserver.observe(hireSection);
+    menuBtn.style.opacity = "0";
+    menuBtn.style.transition = "opacity 0.4s ease";
+
+    /* ── Open menu ── */
+    function openMenu() {
+        overlay.classList.add("open");
+        // Hide dock while menu is open
+        dock.classList.add("hidden-by-menu");
+        // Stagger menu links in
+        gsap.fromTo(menuLinks,
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.07, delay: 0.1 }
+        );
+    }
+
+    /* ── Close menu ── */
+    function closeMenu() {
+        overlay.classList.remove("open");
+        dock.classList.remove("hidden-by-menu");
+    }
+
+    menuBtn.addEventListener("click", openMenu);
+    closeBtn.addEventListener("click", closeMenu);
+
+    // Close on link click
+    menuLinks.forEach(link => {
+        link.addEventListener("click", closeMenu);
+    });
+
+    // Close on Escape
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlay.classList.contains("open")) closeMenu();
+    });
+
+    /* ── Parallax entrance for hire-me section ── */
+    gsap.fromTo("#hire-me", { y: 80, opacity: 0 }, {
+        y: 0, opacity: 1,
+        scrollTrigger: {
+            trigger: "#hire-me", start: "top 90%", end: "top 40%", scrub: 1
+        }
+    });
+
+    /* ── Animate hire-heading, subtext, form on scroll ── */
+    const revealOnScroll = (selector, delay = 0) => {
+        const el = document.querySelector(selector);
+        if (!el) return;
+        new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    setTimeout(() => el.classList.add("in-view"), delay);
+                }
+            });
+        }, { threshold: 0.2 }).observe(el);
+    };
+
+    revealOnScroll(".hire-heading", 0);
+    revealOnScroll(".hire-subtext", 150);
+    revealOnScroll(".hire-form", 300);
+
+    /* ── Social links stagger in ── */
+    document.querySelectorAll(".hire-social-link").forEach((link) => {
+        new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) link.classList.add("in-view"); });
+        }, { threshold: 0.15 }).observe(link);
+    });
+
+    /* ── Dock: hide when scrolled into hire-me section ── */
+    ScrollTrigger.create({
+        trigger: "#hire-me",
+        start: "top 80%",
+        onEnter: () => dock.classList.add("hidden-by-menu"),
+        onLeaveBack: () => dock.classList.remove("hidden-by-menu"),
+    });
 }
 
 
@@ -352,22 +375,18 @@ function initCursorReveal() {
     const scene = document.getElementById("cr-scene");
     const reveal = document.querySelector(".cr-reveal-layer");
     if (!scene || !reveal) return;
-
     const dot = document.createElement("div");
     dot.className = "cr-dot";
     document.body.appendChild(dot);
-
     scene.addEventListener("mousemove", (e) => {
         const base = document.querySelector(".cr-base-layer");
         if (base) base.style.opacity = "0";
         const rect = scene.getBoundingClientRect();
         reveal.style.transition = "none";
         reveal.style.clipPath = `circle(160px at ${(e.clientX - rect.left).toFixed(1)}px ${(e.clientY - rect.top).toFixed(1)}px)`;
-        dot.style.left = e.clientX + "px";
-        dot.style.top = e.clientY + "px";
+        dot.style.left = e.clientX + "px"; dot.style.top = e.clientY + "px";
         dot.classList.add("on");
     }, { passive: true });
-
     scene.addEventListener("mouseleave", (e) => {
         const base = document.querySelector(".cr-base-layer");
         if (base) base.style.opacity = "1";
@@ -385,9 +404,7 @@ function initCursorReveal() {
 ════════════════════════════════════════════ */
 const connectBtn = document.getElementById("connect-btn");
 const contactReveal = document.getElementById("contact-reveal");
-if (connectBtn) {
-    connectBtn.addEventListener("click", () => contactReveal.classList.toggle("open"));
-}
+if (connectBtn) connectBtn.addEventListener("click", () => contactReveal.classList.toggle("open"));
 
 
 /* ═══════════════════════════════════════════
@@ -396,15 +413,9 @@ if (connectBtn) {
 document.querySelectorAll(".magnetic").forEach(btn => {
     btn.addEventListener("mousemove", e => {
         const r = btn.getBoundingClientRect();
-        gsap.to(btn, {
-            x: (e.clientX - (r.left + r.width / 2)) * 0.35,
-            y: (e.clientY - (r.top + r.height / 2)) * 0.35,
-            duration: 0.4, ease: "power2.out"
-        });
+        gsap.to(btn, { x: (e.clientX - (r.left + r.width / 2)) * 0.35, y: (e.clientY - (r.top + r.height / 2)) * 0.35, duration: 0.4, ease: "power2.out" });
     });
-    btn.addEventListener("mouseleave", () => {
-        gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1,0.4)" });
-    });
+    btn.addEventListener("mouseleave", () => gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1,0.4)" }));
 });
 
 
@@ -418,79 +429,36 @@ const SONGS = [
     "O Sanam  Farmhouse Frames  Lucky Ali  unplugged 2025.mp3",
     "Sticky Fingers  - A Love Letter From Me To You (The Village Sessions).mp3"
 ];
-
 const songPath = f => "assets/mp3 file/" + encodeURIComponent(f);
-const displayName = f => f.replace(/\.mp3$/i, "").replace(/\[.*?\]/g, "")
-    .replace(/\(Official.*?\)/gi, "").replace(/Official Video/gi, "")
-    .replace(/\s{2,}/g, " ").trim();
-
+const displayName = f => f.replace(/\.mp3$/i, "").replace(/\[.*?\]/g, "").replace(/\(Official.*?\)/gi, "").replace(/Official Video/gi, "").replace(/\s{2,}/g, " ").trim();
 let currentIndex = 0, isShuffled = false, shuffleOrder = [];
-
 function buildShuffleOrder() {
     shuffleOrder = [...Array(SONGS.length).keys()];
-    for (let i = shuffleOrder.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffleOrder[i], shuffleOrder[j]] = [shuffleOrder[j], shuffleOrder[i]];
-    }
+    for (let i = shuffleOrder.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[shuffleOrder[i], shuffleOrder[j]] = [shuffleOrder[j], shuffleOrder[i]]; }
 }
 buildShuffleOrder();
-
-function loadSong(idx) {
-    currentIndex = idx;
-    audio.src = songPath(SONGS[idx]);
-    songName.textContent = displayName(SONGS[idx]);
-    progress.style.width = "0%";
-}
-function playSong() {
-    audio.play().then(() => {
-        playIcon.style.display = "none"; pauseIcon.style.display = "block";
-    }).catch(() => { });
-}
-function pauseSong() {
-    audio.pause();
-    playIcon.style.display = "block"; pauseIcon.style.display = "none";
-}
-function nextSong() {
-    const pos = shuffleOrder.indexOf(currentIndex);
-    const next = isShuffled ? shuffleOrder[(pos + 1) % SONGS.length] : (currentIndex + 1) % SONGS.length;
-    loadSong(next); playSong();
-}
-function prevSong() {
-    if (audio.currentTime > 3) { audio.currentTime = 0; return; }
-    const pos = shuffleOrder.indexOf(currentIndex);
-    const prev = isShuffled ? shuffleOrder[(pos - 1 + SONGS.length) % SONGS.length] : (currentIndex - 1 + SONGS.length) % SONGS.length;
-    loadSong(prev); playSong();
-}
-
+function loadSong(idx) { currentIndex = idx; audio.src = songPath(SONGS[idx]); songName.textContent = displayName(SONGS[idx]); progress.style.width = "0%"; }
+function playSong() { audio.play().then(() => { playIcon.style.display = "none"; pauseIcon.style.display = "block"; }).catch(() => { }); }
+function pauseSong() { audio.pause(); playIcon.style.display = "block"; pauseIcon.style.display = "none"; }
+function nextSong() { const pos = shuffleOrder.indexOf(currentIndex); const next = isShuffled ? shuffleOrder[(pos + 1) % SONGS.length] : (currentIndex + 1) % SONGS.length; loadSong(next); playSong(); }
+function prevSong() { if (audio.currentTime > 3) { audio.currentTime = 0; return; } const pos = shuffleOrder.indexOf(currentIndex); const prev = isShuffled ? shuffleOrder[(pos - 1 + SONGS.length) % SONGS.length] : (currentIndex - 1 + SONGS.length) % SONGS.length; loadSong(prev); playSong(); }
 loadSong(0);
 playBtn.addEventListener("click", () => audio.paused ? playSong() : pauseSong());
 nextBtn.addEventListener("click", nextSong);
 prevBtn.addEventListener("click", prevSong);
-shuffleBtn.addEventListener("click", () => {
-    isShuffled = !isShuffled;
-    shuffleBtn.classList.toggle("active", isShuffled);
-    if (isShuffled) buildShuffleOrder();
-});
+shuffleBtn.addEventListener("click", () => { isShuffled = !isShuffled; shuffleBtn.classList.toggle("active", isShuffled); if (isShuffled) buildShuffleOrder(); });
 audio.addEventListener("ended", nextSong);
-audio.addEventListener("timeupdate", () => {
-    if (audio.duration && isFinite(audio.duration))
-        progress.style.width = (audio.currentTime / audio.duration * 100) + "%";
-});
+audio.addEventListener("timeupdate", () => { if (audio.duration && isFinite(audio.duration)) progress.style.width = (audio.currentTime / audio.duration * 100) + "%"; });
 
 
 /* ═══════════════════════════════════════════
    FLOATING MUSIC TRIGGER
 ════════════════════════════════════════════ */
 (function () {
-    const btn = document.getElementById("music-trigger-btn");
-    const mp = document.getElementById("music-player");
+    const btn = document.getElementById("music-trigger-btn"), mp = document.getElementById("music-player");
     if (!btn) return;
     let open = false;
-    btn.addEventListener("click", () => {
-        open = !open;
-        mp.classList.toggle("open", open);
-        open ? playSong() : pauseSong();
-    });
+    btn.addEventListener("click", () => { open = !open; mp.classList.toggle("open", open); open ? playSong() : pauseSong(); });
     audio.addEventListener("play", () => { playIcon.style.display = "none"; pauseIcon.style.display = "block"; });
     audio.addEventListener("pause", () => { playIcon.style.display = "block"; pauseIcon.style.display = "none"; });
 })();
@@ -510,23 +478,15 @@ document.querySelectorAll(".rhumb-reveal, #about-section").forEach(el => {
    TYPEWRITER
 ════════════════════════════════════════════ */
 (function () {
-    const el1 = document.getElementById("typewriter");
-    const el2 = document.getElementById("typewriter-clone");
+    const el1 = document.getElementById("typewriter"), el2 = document.getElementById("typewriter-clone");
     if (!el1) return;
     const words = ["Developer", "Musician", "IT Engineer", "Full Stack Dev", "Guitarist", "Network Engineer", "Problem Solver"];
     let wi = 0, ci = 0, del = false;
     function type() {
-        const w = words[wi];
-        const text = del ? w.slice(0, ci - 1) : w.slice(0, ci + 1);
-        el1.textContent = text;
-        if (el2) el2.textContent = text;
-        if (!del) {
-            ci++;
-            if (ci === w.length) { del = true; setTimeout(type, 1800); return; }
-        } else {
-            ci--;
-            if (ci === 0) { del = false; wi = (wi + 1) % words.length; setTimeout(type, 400); return; }
-        }
+        const w = words[wi], text = del ? w.slice(0, ci - 1) : w.slice(0, ci + 1);
+        el1.textContent = text; if (el2) el2.textContent = text;
+        if (!del) { ci++; if (ci === w.length) { del = true; setTimeout(type, 1800); return; } }
+        else { ci--; if (ci === 0) { del = false; wi = (wi + 1) % words.length; setTimeout(type, 400); return; } }
         setTimeout(type, del ? 50 : 90);
     }
     type();
@@ -538,10 +498,7 @@ document.querySelectorAll(".rhumb-reveal, #about-section").forEach(el => {
 ════════════════════════════════════════════ */
 gsap.to("#about-section", {
     clipPath: "inset(0% 0 0 0)", ease: "none",
-    scrollTrigger: {
-        trigger: "#about-section", start: "top bottom", end: "top top",
-        scrub: 1, invalidateOnRefresh: true,
-    }
+    scrollTrigger: { trigger: "#about-section", start: "top bottom", end: "top top", scrub: 1, invalidateOnRefresh: true }
 });
 
 
@@ -554,34 +511,13 @@ gsap.utils.toArray(".sticky-note").forEach((note, i) => {
         scrollTrigger: { trigger: ".sticky-board", start: "top 75%", toggleActions: "play none none reverse" }
     });
 });
-
 document.querySelectorAll(".sticky-note").forEach(note => {
     let drag = false, sx, sy, il, it;
-    note.addEventListener("mousedown", e => {
-        drag = true; sx = e.clientX; sy = e.clientY;
-        il = note.offsetLeft; it = note.offsetTop;
-        note.style.zIndex = 999; note.style.transition = "none"; e.preventDefault();
-    });
-    window.addEventListener("mousemove", e => {
-        if (!drag) return;
-        note.style.left = (il + e.clientX - sx) + "px";
-        note.style.top = (it + e.clientY - sy) + "px";
-    });
-    window.addEventListener("mouseup", () => {
-        if (!drag) return;
-        drag = false; note.style.zIndex = 10;
-        note.style.transition = "box-shadow 0.2s, transform 0.2s";
-    });
-    note.addEventListener("touchstart", e => {
-        const t = e.touches[0]; drag = true; sx = t.clientX; sy = t.clientY;
-        il = note.offsetLeft; it = note.offsetTop; note.style.zIndex = 999;
-    }, { passive: true });
-    window.addEventListener("touchmove", e => {
-        if (!drag) return;
-        const t = e.touches[0];
-        note.style.left = (il + t.clientX - sx) + "px";
-        note.style.top = (it + t.clientY - sy) + "px";
-    }, { passive: true });
+    note.addEventListener("mousedown", e => { drag = true; sx = e.clientX; sy = e.clientY; il = note.offsetLeft; it = note.offsetTop; note.style.zIndex = 999; note.style.transition = "none"; e.preventDefault(); });
+    window.addEventListener("mousemove", e => { if (!drag) return; note.style.left = (il + e.clientX - sx) + "px"; note.style.top = (it + e.clientY - sy) + "px"; });
+    window.addEventListener("mouseup", () => { if (!drag) return; drag = false; note.style.zIndex = 10; note.style.transition = "box-shadow 0.2s,transform 0.2s"; });
+    note.addEventListener("touchstart", e => { const t = e.touches[0]; drag = true; sx = t.clientX; sy = t.clientY; il = note.offsetLeft; it = note.offsetTop; note.style.zIndex = 999; }, { passive: true });
+    window.addEventListener("touchmove", e => { if (!drag) return; const t = e.touches[0]; note.style.left = (il + t.clientX - sx) + "px"; note.style.top = (it + t.clientY - sy) + "px"; }, { passive: true });
     window.addEventListener("touchend", () => { drag = false; note.style.zIndex = 10; });
 });
 
@@ -590,49 +526,13 @@ document.querySelectorAll(".sticky-note").forEach(note => {
    PIXEL SNOW
 ════════════════════════════════════════════ */
 (function () {
-    const snowCanvas = document.getElementById("snow-canvas");
-    if (!snowCanvas) return;
+    const snowCanvas = document.getElementById("snow-canvas"); if (!snowCanvas) return;
     const sc = snowCanvas.getContext("2d");
     const COLORS = ["rgba(255,255,255,0.9)", "rgba(255,255,255,0.6)", "rgba(242,235,224,0.7)", "rgba(255,255,255,0.4)"];
     let flakes = [], rafId = null, lastTime = 0;
     const resize = () => { snowCanvas.width = snowCanvas.offsetWidth; snowCanvas.height = snowCanvas.offsetHeight; };
-    function spawn() {
-        const r = 1.5 + Math.random() * 3;
-        flakes.push({
-            x: Math.random() * (snowCanvas.width || 800), y: -r * 2, r,
-            speed: 0.4 + Math.random() * 0.8, color: COLORS[Math.floor(Math.random() * COLORS.length)],
-            drift: (Math.random() - 0.5) * 0.4
-        });
-    }
-    function draw(ts) {
-        const dt = Math.min(ts - lastTime, 50); lastTime = ts;
-        sc.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
-        if (flakes.length < 100) spawn();
-        flakes.forEach(f => {
-            f.y += f.speed * (dt / 16); f.x += f.drift * (dt / 16);
-            sc.beginPath(); sc.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-            sc.fillStyle = f.color; sc.fill();
-        });
-        flakes = flakes.filter(f => f.y < snowCanvas.height + 10);
-        rafId = requestAnimationFrame(draw);
-    }
-    new IntersectionObserver(entries => {
-        entries.forEach(e => {
-            if (e.isIntersecting && !rafId) { resize(); rafId = requestAnimationFrame(draw); }
-            if (!e.isIntersecting && rafId) { cancelAnimationFrame(rafId); rafId = null; }
-        });
-    }, { threshold: 0.05 }).observe(document.getElementById("about-section"));
+    function spawn() { const r = 1.5 + Math.random() * 3; flakes.push({ x: Math.random() * (snowCanvas.width || 800), y: -r * 2, r, speed: 0.4 + Math.random() * 0.8, color: COLORS[Math.floor(Math.random() * COLORS.length)], drift: (Math.random() - 0.5) * 0.4 }); }
+    function draw(ts) { const dt = Math.min(ts - lastTime, 50); lastTime = ts; sc.clearRect(0, 0, snowCanvas.width, snowCanvas.height); if (flakes.length < 100) spawn(); flakes.forEach(f => { f.y += f.speed * (dt / 16); f.x += f.drift * (dt / 16); sc.beginPath(); sc.arc(f.x, f.y, f.r, 0, Math.PI * 2); sc.fillStyle = f.color; sc.fill(); }); flakes = flakes.filter(f => f.y < snowCanvas.height + 10); rafId = requestAnimationFrame(draw); }
+    new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting && !rafId) { resize(); rafId = requestAnimationFrame(draw); } if (!e.isIntersecting && rafId) { cancelAnimationFrame(rafId); rafId = null; } }); }, { threshold: 0.05 }).observe(document.getElementById("about-section"));
     window.addEventListener("resize", resize, { passive: true });
 })();
-
-
-/* ═══════════════════════════════════════════
-   HIRE ME PARALLAX
-════════════════════════════════════════════ */
-const hireContainer = document.getElementById("hire-me");
-if (hireContainer) {
-    gsap.fromTo(hireContainer, { y: 150, opacity: 0 }, {
-        y: 0, opacity: 1,
-        scrollTrigger: { trigger: hireContainer, start: "top 85%", end: "top 25%", scrub: 1 }
-    });
-}
