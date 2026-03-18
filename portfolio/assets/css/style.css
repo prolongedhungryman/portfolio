@@ -21,7 +21,47 @@ body {
 }
 
 /* ═══════════════════════════════════════════
-   BLOB CURSOR
+   TEXT CURSOR — vanilla JS port of ReactBits
+   Spawns "Lazy" labels that follow the mouse
+   and float/fade out
+════════════════════════════════════════════ */
+.text-cursor-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99998;
+    /* just below blob cursor */
+    overflow: hidden;
+}
+
+.text-cursor-item {
+    position: absolute;
+    user-select: none;
+    white-space: nowrap;
+    font-size: 1.4rem;
+    font-family: "Barlow Condensed", sans-serif;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #F5FF3C;
+    text-shadow: 0 0 12px rgba(245, 255, 60, 0.6);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+}
+
+.text-cursor-item.alive {
+    opacity: 1;
+}
+
+.text-cursor-item.dying {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.6);
+}
+
+/* ═══════════════════════════════════════════
+   BLOB CURSOR (kept as layer above text trail)
 ════════════════════════════════════════════ */
 .blob-container {
     position: fixed;
@@ -395,26 +435,6 @@ body {
     margin-bottom: 0.3rem;
 }
 
-.type-cursor {
-    display: inline-block;
-    font-weight: 300;
-    color: #FF7518;
-    animation: blink 0.8s step-end infinite;
-    margin-left: 1px;
-}
-
-@keyframes blink {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0;
-    }
-}
-
 .hero-right-col {
     display: flex;
     flex-direction: column;
@@ -444,7 +464,7 @@ body {
     object-position: center top;
 }
 
-/* ── MARQUEE STRIP ── */
+/* ── MARQUEE ── */
 .marquee-strip {
     background: #1A1A1A;
     color: #F2EBE0;
@@ -459,7 +479,6 @@ body {
 .marquee-track {
     display: flex;
     align-items: center;
-    gap: 0;
     white-space: nowrap;
     animation: marquee 22s linear infinite;
     width: max-content;
@@ -596,16 +615,13 @@ body {
 }
 
 /* ═══════════════════════════════════════════
-   MAGNETIC BUTTON
+   CONNECT BUTTON
 ════════════════════════════════════════════ */
 .magnetic {
     display: inline-block;
     transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
-/* ═══════════════════════════════════════════
-   CONNECT BUTTON
-════════════════════════════════════════════ */
 .connect-wrap {
     display: flex;
     flex-direction: column;
@@ -688,7 +704,6 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
-    gap: 0;
     justify-content: center;
 }
 
@@ -703,7 +718,6 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.25);
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -1143,6 +1157,7 @@ body {
 
 /* ═══════════════════════════════════════════
    HIRE ME SECTION
+   FIX: text swap on hover now works correctly
 ════════════════════════════════════════════ */
 .hire-me-section {
     position: relative;
@@ -1171,13 +1186,73 @@ body {
     color: #0E1320;
     position: relative;
     padding: 1rem 2rem;
-    transition: color 0.3s;
+    overflow: hidden;
 }
 
-.hire-target:hover {
-    color: #5227FF;
+/* Stack both texts, swap on hover */
+.target-text-wrap {
+    position: relative;
+    display: block;
+    height: 1em;
+    line-height: 1;
+}
+
+.text-default,
+.text-hover {
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+    will-change: transform, opacity;
+}
+
+.text-default {
+    position: relative;
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .text-hover {
-    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    color: #5227FF;
+    transform: translateY(60%);
+    opacity: 0;
+}
+
+.hire-target:hover .text-default {
+    transform: translateY(-60%);
+    opacity: 0;
+}
+
+.hire-target:hover .text-hover {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Upwork badge that appears on hover */
+.hire-upwork-badge {
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    opacity: 0;
+    background: #14a800;
+    color: #fff;
+    font-family: "Inter", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.5rem 1.4rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+.hire-content:hover .hire-upwork-badge {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
 }
