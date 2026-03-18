@@ -26,72 +26,115 @@ const ctx = canvas.getContext("2d");
 const dock = document.getElementById("dock");
 
 /* ═══════════════════════════════════════════
-   TEXT CURSOR — "Lazy" trail
+   TARGET CURSOR — vanilla port of ReactBits
+   ─ Small dot follows mouse exactly
+   ─ Outer ring follows with smooth lag (GSAP)
+   ─ Ring expands + label appears on hover
+     over interactive / text elements
+   ─ Ring shrinks to dot on click
+   ─ Everything is pointer-events:none so it
+     never blocks clicks or hover states
 ════════════════════════════════════════════ */
 (function () {
-    const LABEL = "Lazy";
-    const SPACING = 90;
-    const MAX = 6;
-    const LIFETIME = 900;
+    /* ── Build DOM ── */
+    const cursorWrap = document.createElement("div");
+    cursorWrap.id = "tc-wrap";
 
-    const HIDE_SELECTORS = [
-        "a", "button", "h1", "h2", "h3", "h4", "h5", "h6",
-        "p", "span", "li", "label", "input", "textarea",
-        ".hire-social-link", ".hire-menu-link", ".hire-heading",
-        ".hire-subtext", ".hire-submit-btn", ".connect-btn",
-        ".dock-item", ".sticky-text", ".board-title",
-        ".cr-base-layer", ".cr-reveal-layer", ".marquee-track",
-        "#scroll-hint", "#lazy-text", "#ek-text", ".social-icon"
+    const dot = document.createElement("div");
+    dot.id = "tc-dot";
+
+    const ring = document.createElement("div");
+    ring.id = "tc-ring";
+
+    const label = document.createElement("span");
+    label.id = "tc-label";
+
+    ring.appendChild(label);
+    cursorWrap.appendChild(dot);
+    cursorWrap.appendChild(ring);
+    document.body.appendChild(cursorWrap);
+
+    /* ── State ── */
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+    let isHover = false;
+    let isDown = false;
+    let rafId = null;
+
+    /* ── Selectors that trigger expanded ring ── */
+    const HOVER_SEL = [
+        "a", "button", "input", "textarea", "select", "label",
+        "[role='button']", ".dock-item", ".hire-social-link",
+        ".hire-menu-link", ".hire-submit-btn", ".connect-btn",
+        ".ctrl-btn", ".social-icon", ".sticky-note",
+        ".hire-menu-btn", ".hire-menu-close", ".hire-target",
+        "#music-trigger-btn"
     ].join(", ");
 
-    const container = document.createElement("div");
-    container.className = "text-cursor-container";
-    document.body.appendChild(container);
+    /* ── Track mouse ── */
+    window.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
 
-    let lastX = 0, lastY = 0, items = [], hidden = false;
+        // Snap dot immediately
+        dot.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
 
-    document.addEventListener("mouseover", (e) => {
-        if (e.target.closest(HIDE_SELECTORS)) {
-            hidden = true;
-            items.forEach(i => { i.el.classList.remove("alive"); i.el.classList.add("dying"); });
+        // Check if over interactive element
+        const over = e.target.closest(HOVER_SEL);
+        if (over && !isHover) {
+            isHover = true;
+            ring.classList.add("tc-hover");
+            // Show label from data-cursor attr if present
+            const lbl = over.getAttribute("data-cursor");
+            label.textContent = lbl || "";
+            label.style.opacity = lbl ? "1" : "0";
+        } else if (!over && isHover) {
+            isHover = false;
+            ring.classList.remove("tc-hover");
+            label.textContent = "";
+            label.style.opacity = "0";
         }
     }, { passive: true });
 
-    document.addEventListener("mouseout", (e) => {
-        if (e.target.closest(HIDE_SELECTORS)) { hidden = false; lastX = 0; lastY = 0; }
+    /* ── Hide when leaving window ── */
+    document.addEventListener("mouseleave", () => {
+        cursorWrap.style.opacity = "0";
     }, { passive: true });
 
-    function spawnItem(x, y) {
-        if (hidden) return;
-        if (items.length >= MAX) { const old = items.shift(); old.el.remove(); }
-        const el = document.createElement("div");
-        el.className = "text-cursor-item";
-        el.textContent = LABEL;
-        const rot = (Math.random() - 0.5) * 16;
-        el.style.left = x + "px"; el.style.top = y + "px";
-        el.style.transform = `translate(-50%,-50%) rotate(${rot}deg)`;
-        container.appendChild(el);
-        requestAnimationFrame(() => el.classList.add("alive"));
-        const item = { el };
-        items.push(item);
-        setTimeout(() => {
-            el.classList.remove("alive"); el.classList.add("dying");
-            setTimeout(() => { el.remove(); items = items.filter(i => i !== item); }, 500);
-        }, LIFETIME);
+    document.addEventListener("mouseenter", () => {
+        cursorWrap.style.opacity = "1";
+    }, { passive: true });
+
+    /* ── Click shrink effect ── */
+    window.addEventListener("mousedown", () => {
+        isDown = true;
+        ring.classList.add("tc-click");
+    }, { passive: true });
+
+    window.addEventListener("mouseup", () => {
+        isDown = false;
+        ring.classList.remove("tc-click");
+    }, { passive: true });
+
+    /* ── Animate ring with lerp (smooth lag) ── */
+    const LERP = 0.12; // 0 = no follow, 1 = instant — 0.12 = smooth lag
+
+    function animate() {
+        // Lerp ring towards mouse
+        ringX += (mouseX - ringX) * LERP;
+        ringY += (mouseY - ringY) * LERP;
+
+        ring.style.transform = `translate(${ringX}px, ${ringY}px)`;
+
+        rafId = requestAnimationFrame(animate);
     }
 
-    window.addEventListener("mousemove", (e) => {
-        if (hidden) return;
-        const dx = e.clientX - lastX, dy = e.clientY - lastY;
-        if (Math.sqrt(dx * dx + dy * dy) >= SPACING || (lastX === 0 && lastY === 0)) {
-            spawnItem(e.clientX, e.clientY);
-            lastX = e.clientX; lastY = e.clientY;
-        }
-    }, { passive: true });
+    animate();
 
-    document.addEventListener("mouseleave", () => {
-        items.forEach(i => { i.el.classList.remove("alive"); i.el.classList.add("dying"); });
-    }, { passive: true });
+    /* ── Hide native cursor everywhere ── */
+    document.documentElement.style.cursor = "none";
 })();
 
 
@@ -122,7 +165,7 @@ function _flushMask() {
     const w = window.innerWidth, h = window.innerHeight;
     ctx.clearRect(0, 0, w, h);
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(192,0,26,${currentDark})`;
+    ctx.fillStyle = `rgba(0,180,180,${currentDark})`;
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = "destination-out";
     ctx.fillStyle = "rgba(0,0,0,1)";
@@ -227,10 +270,16 @@ function buildVibe() {
         }
     });
 
-    tl.fromTo(vibeProxy, { scale: 1 }, { scale: 14, ease: "none", duration: 1, onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity) }, 0);
+    tl.fromTo(vibeProxy, { scale: 1 }, {
+        scale: 14, ease: "none", duration: 1,
+        onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity)
+    }, 0);
     tl.fromTo("#lazy-text", { x: 0, opacity: 0.85 }, { x: -160, opacity: 0, ease: "none", duration: 0.4 }, 0);
     tl.fromTo("#ek-text", { x: 0, opacity: 0.85 }, { x: 160, opacity: 0, ease: "none", duration: 0.4 }, 0);
-    tl.fromTo(darkProxy, { opacity: 1 }, { opacity: 0, ease: "none", duration: 0.3, onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity) }, 0.7);
+    tl.fromTo(darkProxy, { opacity: 1 }, {
+        opacity: 0, ease: "none", duration: 0.3,
+        onUpdate: () => drawMask(vibeProxy.scale, darkProxy.opacity)
+    }, 0.7);
 
     ScrollTrigger.create({
         trigger: "#hero", start: "top+=10 top",
@@ -275,7 +324,7 @@ function buildHomepage() {
 
 
 /* ═══════════════════════════════════════════
-   HIRE ME — Menu, entrance, dock hide/show
+   HIRE ME
 ════════════════════════════════════════════ */
 function initHireMe() {
     const menuBtn = document.getElementById("hire-menu-btn");
@@ -283,8 +332,8 @@ function initHireMe() {
     const closeBtn = document.getElementById("hire-menu-close");
     const menuLinks = document.querySelectorAll(".hire-menu-link");
     const hireSection = document.getElementById("hire-me");
+    if (!menuBtn) return;
 
-    /* ── Menu button: only visible when hire-me is in viewport ── */
     const menuBtnObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             menuBtn.style.opacity = entry.isIntersecting ? "1" : "0";
@@ -295,19 +344,15 @@ function initHireMe() {
     menuBtn.style.opacity = "0";
     menuBtn.style.transition = "opacity 0.4s ease";
 
-    /* ── Open menu ── */
     function openMenu() {
         overlay.classList.add("open");
-        // Hide dock while menu is open
         dock.classList.add("hidden-by-menu");
-        // Stagger menu links in
         gsap.fromTo(menuLinks,
             { y: 60, opacity: 0 },
             { y: 0, opacity: 1, duration: 0.6, ease: "power3.out", stagger: 0.07, delay: 0.1 }
         );
     }
 
-    /* ── Close menu ── */
     function closeMenu() {
         overlay.classList.remove("open");
         dock.classList.remove("hidden-by-menu");
@@ -315,35 +360,21 @@ function initHireMe() {
 
     menuBtn.addEventListener("click", openMenu);
     closeBtn.addEventListener("click", closeMenu);
-
-    // Close on link click
-    menuLinks.forEach(link => {
-        link.addEventListener("click", closeMenu);
-    });
-
-    // Close on Escape
+    menuLinks.forEach(link => link.addEventListener("click", closeMenu));
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && overlay.classList.contains("open")) closeMenu();
     });
 
-    /* ── Parallax entrance for hire-me section ── */
     gsap.fromTo("#hire-me", { y: 80, opacity: 0 }, {
         y: 0, opacity: 1,
-        scrollTrigger: {
-            trigger: "#hire-me", start: "top 90%", end: "top 40%", scrub: 1
-        }
+        scrollTrigger: { trigger: "#hire-me", start: "top 90%", end: "top 40%", scrub: 1 }
     });
 
-    /* ── Animate hire-heading, subtext, form on scroll ── */
     const revealOnScroll = (selector, delay = 0) => {
         const el = document.querySelector(selector);
         if (!el) return;
         new IntersectionObserver((entries) => {
-            entries.forEach(e => {
-                if (e.isIntersecting) {
-                    setTimeout(() => el.classList.add("in-view"), delay);
-                }
-            });
+            entries.forEach(e => { if (e.isIntersecting) setTimeout(() => el.classList.add("in-view"), delay); });
         }, { threshold: 0.2 }).observe(el);
     };
 
@@ -351,17 +382,14 @@ function initHireMe() {
     revealOnScroll(".hire-subtext", 150);
     revealOnScroll(".hire-form", 300);
 
-    /* ── Social links stagger in ── */
     document.querySelectorAll(".hire-social-link").forEach((link) => {
         new IntersectionObserver((entries) => {
             entries.forEach(e => { if (e.isIntersecting) link.classList.add("in-view"); });
         }, { threshold: 0.15 }).observe(link);
     });
 
-    /* ── Dock: hide when scrolled into hire-me section ── */
     ScrollTrigger.create({
-        trigger: "#hire-me",
-        start: "top 80%",
+        trigger: "#hire-me", start: "top 80%",
         onEnter: () => dock.classList.add("hidden-by-menu"),
         onLeaveBack: () => dock.classList.remove("hidden-by-menu"),
     });
@@ -369,15 +397,17 @@ function initHireMe() {
 
 
 /* ═══════════════════════════════════════════
-   CURSOR REVEAL
+   CURSOR REVEAL (cr-scene)
 ════════════════════════════════════════════ */
 function initCursorReveal() {
     const scene = document.getElementById("cr-scene");
     const reveal = document.querySelector(".cr-reveal-layer");
     if (!scene || !reveal) return;
+
     const dot = document.createElement("div");
     dot.className = "cr-dot";
     document.body.appendChild(dot);
+
     scene.addEventListener("mousemove", (e) => {
         const base = document.querySelector(".cr-base-layer");
         if (base) base.style.opacity = "0";
@@ -387,6 +417,7 @@ function initCursorReveal() {
         dot.style.left = e.clientX + "px"; dot.style.top = e.clientY + "px";
         dot.classList.add("on");
     }, { passive: true });
+
     scene.addEventListener("mouseleave", (e) => {
         const base = document.querySelector(".cr-base-layer");
         if (base) base.style.opacity = "1";
