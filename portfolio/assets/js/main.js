@@ -165,7 +165,7 @@ function _flushMask() {
     const w = window.innerWidth, h = window.innerHeight;
     ctx.clearRect(0, 0, w, h);
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(0,180,180,${currentDark})`;
+    ctx.fillStyle = `rgba(192,0,26,${currentDark})`;
     ctx.fillRect(0, 0, w, h);
     ctx.globalCompositeOperation = "destination-out";
     ctx.fillStyle = "rgba(0,0,0,1)";
