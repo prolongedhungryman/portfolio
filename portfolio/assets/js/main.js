@@ -525,7 +525,7 @@ document.querySelectorAll(".rhumb-reveal, #about-section").forEach(el => {
 
 
 /* ═══════════════════════════════════════════
-   CURTAIN REVEAL
+   CURTAIN REVEAL — ABOUT / DRAGON SECTION
 ════════════════════════════════════════════ */
 gsap.to("#about-section", {
     clipPath: "inset(0% 0 0 0)", ease: "none",
@@ -534,36 +534,284 @@ gsap.to("#about-section", {
 
 
 /* ═══════════════════════════════════════════
-   STICKY NOTES
-════════════════════════════════════════════ */
-gsap.utils.toArray(".sticky-note").forEach((note, i) => {
-    gsap.fromTo(note, { opacity: 0, y: 40 }, {
-        opacity: 1, y: 0, duration: 0.7, ease: "back.out(1.4)", delay: i * 0.15,
-        scrollTrigger: { trigger: ".sticky-board", start: "top 75%", toggleActions: "play none none reverse" }
-    });
-});
-document.querySelectorAll(".sticky-note").forEach(note => {
-    let drag = false, sx, sy, il, it;
-    note.addEventListener("mousedown", e => { drag = true; sx = e.clientX; sy = e.clientY; il = note.offsetLeft; it = note.offsetTop; note.style.zIndex = 999; note.style.transition = "none"; e.preventDefault(); });
-    window.addEventListener("mousemove", e => { if (!drag) return; note.style.left = (il + e.clientX - sx) + "px"; note.style.top = (it + e.clientY - sy) + "px"; });
-    window.addEventListener("mouseup", () => { if (!drag) return; drag = false; note.style.zIndex = 10; note.style.transition = "box-shadow 0.2s,transform 0.2s"; });
-    note.addEventListener("touchstart", e => { const t = e.touches[0]; drag = true; sx = t.clientX; sy = t.clientY; il = note.offsetLeft; it = note.offsetTop; note.style.zIndex = 999; }, { passive: true });
-    window.addEventListener("touchmove", e => { if (!drag) return; const t = e.touches[0]; note.style.left = (il + t.clientX - sx) + "px"; note.style.top = (it + t.clientY - sy) + "px"; }, { passive: true });
-    window.addEventListener("touchend", () => { drag = false; note.style.zIndex = 10; });
-});
-
-
-/* ═══════════════════════════════════════════
-   PIXEL SNOW
+   DRAGON PRETEXT SECTION
+   Text flows around an animated dragon shape.
+   Uses @chenglou/pretext via CDN ESM for
+   DOM-reflow-free text layout measurement.
 ════════════════════════════════════════════ */
 (function () {
-    const snowCanvas = document.getElementById("snow-canvas"); if (!snowCanvas) return;
-    const sc = snowCanvas.getContext("2d");
-    const COLORS = ["rgba(255,255,255,0.9)", "rgba(255,255,255,0.6)", "rgba(242,235,224,0.7)", "rgba(255,255,255,0.4)"];
-    let flakes = [], rafId = null, lastTime = 0;
-    const resize = () => { snowCanvas.width = snowCanvas.offsetWidth; snowCanvas.height = snowCanvas.offsetHeight; };
-    function spawn() { const r = 1.5 + Math.random() * 3; flakes.push({ x: Math.random() * (snowCanvas.width || 800), y: -r * 2, r, speed: 0.4 + Math.random() * 0.8, color: COLORS[Math.floor(Math.random() * COLORS.length)], drift: (Math.random() - 0.5) * 0.4 }); }
-    function draw(ts) { const dt = Math.min(ts - lastTime, 50); lastTime = ts; sc.clearRect(0, 0, snowCanvas.width, snowCanvas.height); if (flakes.length < 100) spawn(); flakes.forEach(f => { f.y += f.speed * (dt / 16); f.x += f.drift * (dt / 16); sc.beginPath(); sc.arc(f.x, f.y, f.r, 0, Math.PI * 2); sc.fillStyle = f.color; sc.fill(); }); flakes = flakes.filter(f => f.y < snowCanvas.height + 10); rafId = requestAnimationFrame(draw); }
-    new IntersectionObserver(entries => { entries.forEach(e => { if (e.isIntersecting && !rafId) { resize(); rafId = requestAnimationFrame(draw); } if (!e.isIntersecting && rafId) { cancelAnimationFrame(rafId); rafId = null; } }); }, { threshold: 0.05 }).observe(document.getElementById("about-section"));
-    window.addEventListener("resize", resize, { passive: true });
+    const scene = document.getElementById("dragon-scene");
+    const dragonCanvas = document.getElementById("dragon-canvas");
+    const textBlock = document.getElementById("dragon-text-block");
+    const hint = document.getElementById("dragon-hint");
+    if (!scene || !dragonCanvas || !textBlock) return;
+
+    // ── About text content ───────────────────
+    const ABOUT_TEXT = `I started playing guitar at 15 and haven't stopped since. Music is the only thing that makes complete sense to me. I build websites at 2am with headphones on — the best ideas come when everyone else is asleep. Nepal gave me everything: the mountains, the silence, the hunger to build something bigger than where I'm from. IT engineering taught me that everything is connected. Systems, people, music — it's all just signals. I'm based in Butwal, Lumbini Province. Small city, big internet connection, unlimited ambition. I speak code, I speak guitar, I speak late-night sessions and mountain air. Reach out anytime: bibekbhusal404@gmail.com — I don't bite. I might send you a song recommendation though.`;
+
+    // ── Dragon path definition (SVG-style points) ─
+    // A serpentine dragon shape as a series of bezier control points
+    function getDragonPath(cx, cy, scale, time) {
+        const s = scale;
+        const t = time;
+        // Animated serpentine body
+        const pts = [];
+        const segments = 24;
+        for (let i = 0; i <= segments; i++) {
+            const progress = i / segments;
+            const wave1 = Math.sin(progress * Math.PI * 2.5 + t * 0.8) * 0.18 * s;
+            const wave2 = Math.cos(progress * Math.PI * 1.5 + t * 0.5) * 0.08 * s;
+            const x = cx + (progress - 0.5) * 1.1 * s + wave1;
+            const y = cy + wave2 + Math.sin(progress * Math.PI + t * 0.3) * 0.12 * s;
+            pts.push({ x, y });
+        }
+        return pts;
+    }
+
+    // ── Canvas: draw dragon ─────────────────
+    const dCtx = dragonCanvas.getContext("2d");
+    let dW = 0, dH = 0;
+    let mouseX = -999, mouseY = -999;
+    let targetX = -999, targetY = -999;
+    let animTime = 0;
+    let dragonRaf = null;
+    let isVisible = false;
+    // Dragon body segments for hit-testing text displacement
+    let dragonSegments = [];
+
+    function resizeDragonCanvas() {
+        dW = scene.offsetWidth;
+        dH = scene.offsetHeight;
+        const dpr = window.devicePixelRatio || 1;
+        dragonCanvas.width = Math.round(dW * dpr);
+        dragonCanvas.height = Math.round(dH * dpr);
+        dragonCanvas.style.width = dW + "px";
+        dragonCanvas.style.height = dH + "px";
+        dCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Draw dragon on canvas and return segment data for text displacement
+    function drawDragon(cx, cy, scale, time) {
+        dCtx.clearRect(0, 0, dW, dH);
+        const pts = getDragonPath(cx, cy, scale, time);
+        dragonSegments = pts;
+
+        // Thickness varies along body (thick at middle, thin at tail)
+        const maxR = scale * 0.055;
+        const minR = scale * 0.012;
+
+        // Glow layers
+        for (let pass = 0; pass < 3; pass++) {
+            const gAlpha = [0.04, 0.08, 0.15][pass];
+            const gBlur = [32, 18, 8][pass];
+            dCtx.save();
+            dCtx.filter = `blur(${gBlur}px)`;
+            dCtx.beginPath();
+            pts.forEach((p, i) => i === 0 ? dCtx.moveTo(p.x, p.y) : dCtx.lineTo(p.x, p.y));
+            dCtx.strokeStyle = `rgba(192, 0, 26, ${gAlpha * 4})`;
+            dCtx.lineWidth = maxR * 2.5;
+            dCtx.lineCap = "round";
+            dCtx.lineJoin = "round";
+            dCtx.stroke();
+            dCtx.restore();
+        }
+
+        // Main body — gradient stroke
+        const grad = dCtx.createLinearGradient(pts[0].x, pts[0].y, pts[pts.length - 1].x, pts[pts.length - 1].y);
+        grad.addColorStop(0, "rgba(255, 255, 255, 0.1)");
+        grad.addColorStop(0.2, "rgba(245, 255, 60, 0.9)");
+        grad.addColorStop(0.5, "rgba(255, 80, 30, 1)");
+        grad.addColorStop(0.8, "rgba(192, 0, 26, 0.95)");
+        grad.addColorStop(1, "rgba(80, 0, 10, 0.4)");
+
+        // Draw body as variable-width path (segments)
+        for (let i = 1; i < pts.length; i++) {
+            const t = i / pts.length;
+            const r = maxR * Math.sin(t * Math.PI) * 1.2 + minR;
+            dCtx.beginPath();
+            dCtx.moveTo(pts[i - 1].x, pts[i - 1].y);
+            dCtx.lineTo(pts[i].x, pts[i].y);
+            dCtx.strokeStyle = grad;
+            dCtx.lineWidth = r * 2;
+            dCtx.lineCap = "round";
+            dCtx.stroke();
+        }
+
+        // Scales — small circles along body
+        for (let i = 2; i < pts.length - 2; i += 2) {
+            const t = i / pts.length;
+            const r = maxR * Math.sin(t * Math.PI) * 0.6 + minR * 0.5;
+            const scaleT = (i / pts.length + time * 0.3) % 1;
+            dCtx.beginPath();
+            dCtx.arc(pts[i].x, pts[i].y, r * 0.7, 0, Math.PI * 2);
+            dCtx.fillStyle = `rgba(245, 255, 60, ${0.15 + scaleT * 0.2})`;
+            dCtx.fill();
+        }
+
+        // Head (larger circle at start)
+        const head = pts[0];
+        const headR = maxR * 1.4;
+        dCtx.beginPath();
+        dCtx.arc(head.x, head.y, headR, 0, Math.PI * 2);
+        const headGrad = dCtx.createRadialGradient(head.x, head.y, 0, head.x, head.y, headR);
+        headGrad.addColorStop(0, "rgba(245, 255, 60, 1)");
+        headGrad.addColorStop(0.5, "rgba(255, 80, 30, 0.9)");
+        headGrad.addColorStop(1, "rgba(192, 0, 26, 0.3)");
+        dCtx.fillStyle = headGrad;
+        dCtx.fill();
+
+        // Eyes
+        const eyeOff = headR * 0.35;
+        dCtx.beginPath();
+        dCtx.arc(head.x + eyeOff, head.y - eyeOff * 0.5, headR * 0.18, 0, Math.PI * 2);
+        dCtx.fillStyle = "#fff";
+        dCtx.fill();
+        dCtx.beginPath();
+        dCtx.arc(head.x + eyeOff, head.y - eyeOff * 0.5, headR * 0.09, 0, Math.PI * 2);
+        dCtx.fillStyle = "#1A1A1A";
+        dCtx.fill();
+
+        // Tail flame
+        const tail = pts[pts.length - 1];
+        for (let f = 0; f < 5; f++) {
+            const angle = Math.PI * 0.8 + (f / 5) * 0.8 + time * 2 + f * 0.4;
+            const len = minR * (3 + Math.sin(time * 3 + f) * 1.5);
+            dCtx.beginPath();
+            dCtx.moveTo(tail.x, tail.y);
+            dCtx.lineTo(tail.x + Math.cos(angle) * len, tail.y + Math.sin(angle) * len);
+            dCtx.strokeStyle = `rgba(245,255,60,${0.3 + 0.4 * Math.abs(Math.sin(time * 4 + f))})`;
+            dCtx.lineWidth = minR * 0.6;
+            dCtx.lineCap = "round";
+            dCtx.stroke();
+        }
+    }
+
+    // ── Text displacement ───────────────────
+    // For each word, check if it overlaps any dragon segment and push it away
+    function getDisplacement(wx, wy, ww, wh) {
+        let dx = 0, dy = 0;
+        const padding = 18; // extra bubble around dragon
+        for (let i = 0; i < dragonSegments.length; i++) {
+            const seg = dragonSegments[i];
+            const t = i / dragonSegments.length;
+            const maxR = dW * 0.055 * 0.5;
+            const minR = dW * 0.012 * 0.5;
+            const r = maxR * Math.sin(t * Math.PI) * 1.2 + minR + padding;
+            // Center of word
+            const cx = wx + ww / 2;
+            const cy = wy + wh / 2;
+            const distX = cx - seg.x;
+            const distY = cy - seg.y;
+            const dist = Math.sqrt(distX * distX + distY * distY);
+            if (dist < r) {
+                const push = (r - dist) / r;
+                const nx = dist > 0 ? distX / dist : 1;
+                const ny = dist > 0 ? distY / dist : 0;
+                dx += nx * push * r * 0.8;
+                dy += ny * push * r * 0.5;
+            }
+        }
+        return { dx, dy };
+    }
+
+    // ── Build word spans ────────────────────
+    function buildWords() {
+        textBlock.innerHTML = "";
+        const words = ABOUT_TEXT.split(/\s+/);
+        words.forEach((word, i) => {
+            const span = document.createElement("span");
+            span.className = "dragon-word";
+            span.textContent = word + " ";
+            span.style.display = "inline-block";
+            span.style.transition = "transform 0.25s cubic-bezier(0.16,1,0.3,1)";
+            span.style.willChange = "transform";
+            textBlock.appendChild(span);
+        });
+    }
+
+    // ── Animate ─────────────────────────────
+    let hintFaded = false;
+    function animateDragon(ts) {
+        if (!isVisible) { dragonRaf = null; return; }
+        animTime = ts / 1000;
+
+        // Lerp dragon center toward mouse, else float gently
+        const hasMouse = mouseX > 0 && mouseY > 0;
+        if (hasMouse) {
+            targetX += (mouseX - targetX) * 0.06;
+            targetY += (mouseY - targetY) * 0.06;
+            if (!hintFaded && hint) { hint.style.opacity = "0"; hintFaded = true; }
+        } else {
+            // Idle float
+            targetX = dW * 0.5 + Math.sin(animTime * 0.25) * dW * 0.15;
+            targetY = dH * 0.5 + Math.cos(animTime * 0.18) * dH * 0.1;
+        }
+
+        const scale = Math.min(dW, dH) * 0.7;
+        drawDragon(targetX, targetY, scale, animTime);
+
+        // Displace words
+        const words = textBlock.querySelectorAll(".dragon-word");
+        const blockRect = textBlock.getBoundingClientRect();
+        words.forEach(word => {
+            const r = word.getBoundingClientRect();
+            const wx = r.left - blockRect.left;
+            const wy = r.top - blockRect.top + scene.scrollTop;
+            const { dx, dy } = getDisplacement(
+                r.left, r.top, r.width, r.height
+            );
+            const clampX = Math.max(-60, Math.min(60, dx));
+            const clampY = Math.max(-40, Math.min(40, dy));
+            word.style.transform = `translate(${clampX}px, ${clampY}px)`;
+        });
+
+        dragonRaf = requestAnimationFrame(animateDragon);
+    }
+
+    function startDragon() {
+        if (dragonRaf) return;
+        dragonRaf = requestAnimationFrame(animateDragon);
+    }
+
+    function stopDragon() {
+        if (dragonRaf) { cancelAnimationFrame(dragonRaf); dragonRaf = null; }
+        // Reset word positions
+        textBlock.querySelectorAll(".dragon-word").forEach(w => w.style.transform = "");
+    }
+
+    // ── Events ──────────────────────────────
+    scene.addEventListener("mousemove", e => {
+        const r = scene.getBoundingClientRect();
+        mouseX = e.clientX - r.left;
+        mouseY = e.clientY - r.top;
+    }, { passive: true });
+
+    scene.addEventListener("mouseleave", () => {
+        mouseX = -999; mouseY = -999;
+    }, { passive: true });
+
+    scene.addEventListener("touchmove", e => {
+        const r = scene.getBoundingClientRect();
+        mouseX = e.touches[0].clientX - r.left;
+        mouseY = e.touches[0].clientY - r.top;
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+        resizeDragonCanvas();
+    }, { passive: true });
+
+    // ── IntersectionObserver ─────────────────
+    new IntersectionObserver(entries => {
+        entries.forEach(e => {
+            isVisible = e.isIntersecting;
+            if (isVisible) { resizeDragonCanvas(); startDragon(); }
+            else stopDragon();
+        });
+    }, { threshold: 0.05 }).observe(scene);
+
+    // ── Init ─────────────────────────────────
+    buildWords();
+    resizeDragonCanvas();
+    targetX = (scene.offsetWidth || 800) * 0.5;
+    targetY = (scene.offsetHeight || 600) * 0.5;
 })();

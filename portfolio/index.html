@@ -34,7 +34,7 @@
     </video>
 
     <!-- SECTION 1 — VIBE MASK -->
-    <section id="hero">
+    <section class="section" id="hero">
         <canvas id="mask-canvas"></canvas>
         <span id="lazy-text">LAZY</span>
         <span id="ek-text">EK</span>
@@ -45,7 +45,7 @@
     </section>
 
     <!-- SECTION 2 — HOMEPAGE -->
-    <section id="homepage">
+    <section class="section" id="homepage">
         <video id="homepage-bg-video" muted loop playsinline preload="metadata"
             poster="assets/video/secondbg-poster.jpg">
             <source src="assets/video/secondbg.mp4" type="video/mp4" />
@@ -203,46 +203,16 @@
         </div>
     </section>
 
-    <!-- SECTION 3 — ABOUT -->
-    <section id="about-section">
-        <canvas id="snow-canvas"></canvas>
-        <div class="sticky-board" id="sticky-board">
-            <div class="board-title">confessions.</div>
-            <div class="sticky-note" id="note-1" style="--rot: -3deg; --top: 20%; --left: 8%;">
-                <div class="sticky-pin"></div>
-                <p class="sticky-text">I started playing guitar at 15 and haven't stopped since. Music is the only thing
-                    that makes complete sense to me.</p>
-                <span class="sticky-tag">musician</span>
+    <!-- SECTION 3 — DRAGON / ABOUT -->
+    <section class="section" id="about-section">
+        <div class="dragon-scene" id="dragon-scene">
+            <canvas id="dragon-canvas"></canvas>
+            <div class="dragon-text-wrap" id="dragon-text-wrap">
+                <div class="dragon-label">about.</div>
+                <div class="dragon-text-block" id="dragon-text-block"></div>
             </div>
-            <div class="sticky-note" id="note-2" style="--rot: 2deg; --top: 15%; --left: 38%;">
-                <div class="sticky-pin"></div>
-                <p class="sticky-text">I build websites at 2am with headphones on. The best ideas come when everyone
-                    else is asleep.</p>
-                <span class="sticky-tag">developer</span>
-            </div>
-            <div class="sticky-note" id="note-3" style="--rot: -1.5deg; --top: 18%; --left: 65%;">
-                <div class="sticky-pin"></div>
-                <p class="sticky-text">Nepal gave me everything — the mountains, the silence, the hunger to build
-                    something bigger than where I'm from.</p>
-                <span class="sticky-tag">nepal</span>
-            </div>
-            <div class="sticky-note" id="note-4" style="--rot: 3deg; --top: 55%; --left: 12%;">
-                <div class="sticky-pin"></div>
-                <p class="sticky-text">IT engineering taught me that everything is connected. Systems, people, music —
-                    it's all just signals.</p>
-                <span class="sticky-tag">IT engineer</span>
-            </div>
-            <div class="sticky-note" id="note-5" style="--rot: -2deg; --top: 52%; --left: 42%;">
-                <div class="sticky-pin"></div>
-                <p class="sticky-text">I am based in Butwal, Lumbini Province. Small city, big internet connection,
-                    unlimited ambition.</p>
-                <span class="sticky-tag">butwal, nepal</span>
-            </div>
-            <div class="sticky-note" id="note-6" style="--rot: 1.5deg; --top: 50%; --left: 68%;">
-                <div class="sticky-pin"></div>
-                <p class="sticky-text">bibekbhusal404@gmail.com — reach out. I don't bite. I might send you a song
-                    recommendation though.</p>
-                <span class="sticky-tag">contact</span>
+            <div class="dragon-hint" id="dragon-hint">
+                <span>move your cursor</span>
             </div>
         </div>
     </section>
@@ -255,7 +225,7 @@
          Menu button top-right, only visible here.
          Menu opens full-screen overlay with nav links.
     ════════════════════════════════════════ -->
-    <section id="hire-me" class="hire-me-section">
+    <section id="hire-me" class="section hire-me-section">
 
         <!-- MENU BUTTON — only on hire-me section -->
         <button id="hire-menu-btn" class="hire-menu-btn" aria-label="Menu">
@@ -376,6 +346,7 @@
             </a>
         </div>
     </div>
+
 
 </body>
 
