@@ -525,12 +525,9 @@ document.querySelectorAll(".rhumb-reveal, #about-section").forEach(el => {
 
 
 /* ═══════════════════════════════════════════
-   CURTAIN REVEAL — ABOUT / DRAGON SECTION
+   ABOUT SECTION
 ════════════════════════════════════════════ */
-gsap.to("#about-section", {
-    clipPath: "inset(0% 0 0 0)", ease: "none",
-    scrollTrigger: { trigger: "#about-section", start: "top bottom", end: "top top", scrub: 1, invalidateOnRefresh: true }
-});
+// Removed curtain reveal to fix layout collapsing
 
 
 /* ═══════════════════════════════════════════

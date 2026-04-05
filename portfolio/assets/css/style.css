@@ -859,25 +859,26 @@ body {
     position: relative;
     width: 100%;
     margin: 0;
-    padding: 0;
-    background: #0d0d0d;
+    padding: 8vh 4vw; /* Provide padding so shadow isn't cut off */
+    background: #ffebf0; /* Creamy pink */
     z-index: 3;
-    clip-path: inset(100% 0 0 0);
-    will-change: clip-path;
-    transform: translateZ(0);
-    backface-visibility: hidden;
+    /* Removed clip-path and backface-visibility that caused collapsing */
     min-height: 100vh;
-    overflow: hidden;
 }
 
 .about-inner {
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 10vh 5vw 12vh;
+    padding: 4rem 5%;
     display: flex;
     flex-direction: column;
     gap: 3.5rem;
+    background: #ffffff; /* White card */
+    border: 3px solid #000000;
+    box-shadow: 12px 12px 0 #000000;
+    border-radius: 12px;
+    transform: translate(-6px, -6px);
 }
 
 /* ── Header ── */
@@ -891,10 +892,10 @@ body {
 .about-label {
     font-family: "Inter", sans-serif;
     font-size: 0.72rem;
-    font-weight: 500;
+    font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(255, 107, 0, 0.7);
+    color: #ff6b00;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -906,16 +907,16 @@ body {
     font-size: clamp(2rem, 4.5vw, 3.4rem);
     line-height: 1.1;
     letter-spacing: -0.01em;
-    color: #F2EBE0;
+    color: #000000;
     text-transform: uppercase;
 }
 
 .about-body {
     font-family: "Inter", sans-serif;
     font-size: clamp(0.9rem, 1.2vw, 1.05rem);
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.7;
-    color: rgba(242, 235, 224, 0.55);
+    color: #333333;
     max-width: 620px;
 }
 
@@ -933,39 +934,40 @@ body {
     letter-spacing: 0.04em;
     padding: 0.45rem 1.1rem;
     border-radius: 999px;
-    border: 2px solid transparent;
+    border: 2px solid #000000;
     display: inline-block;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 3px 3px 0 #000000;
 }
 
 .tag-pill:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(255, 107, 0, 0.25);
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #000000;
 }
 
 .tag-orange {
-    background: #ff6b00;
-    color: #0d0d0d;
+    background: #fcd34d;
+    color: #000000;
 }
 
 .tag-amber {
-    background: #f59e0b;
-    color: #0d0d0d;
+    background: #c4b5fd;
+    color: #000000;
 }
 
 .tag-red {
-    background: #c0001a;
-    color: #F2EBE0;
+    background: #93c5fd;
+    color: #000000;
 }
 
 .tag-warm {
-    background: #d97706;
-    color: #0d0d0d;
+    background: #6ee7b7;
+    color: #000000;
 }
 
 .tag-fire {
-    background: #ea580c;
-    color: #0d0d0d;
+    background: #fca5a5;
+    color: #000000;
 }
 
 /* ── About Cards Row ── */
@@ -980,30 +982,30 @@ body {
     font-family: "Inter", sans-serif;
     width: 100%;
     translate: -4px -4px;
-    background: #1a1a1a;
-    border: 2px solid #ff6b00;
-    box-shadow: 8px 8px 0 #ff6b00;
+    background: #ffffff;
+    border: 3px solid #000000;
+    box-shadow: 6px 6px 0 #000000;
+    border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
 }
 
 .about-card:hover {
-    translate: -4px 0px;
-    box-shadow: 8px 4px 0 #ff6b00;
-    background: #1f1f1f;
+    translate: -2px -2px;
+    box-shadow: 4px 4px 0 #000000;
 }
 
 .about-card-head {
     font-family: "Inter", sans-serif;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     width: 100%;
     padding: 0.6rem 1rem;
     color: #0d0d0d;
-    background: #ff6b00;
-    border-bottom: 2px solid #ff6b00;
+    background: #fca5a5;
+    border-bottom: 3px solid #000000;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -1011,7 +1013,7 @@ body {
 
 .about-card-head svg {
     flex-shrink: 0;
-    opacity: 0.7;
+    opacity: 0.9;
 }
 
 .about-card-content {
@@ -1027,53 +1029,29 @@ body {
     font-size: clamp(1.05rem, 1.4vw, 1.3rem);
     letter-spacing: 0.01em;
     text-transform: uppercase;
-    color: #F2EBE0;
+    color: #000000;
     line-height: 1.2;
 }
 
 .about-card-desc {
     font-family: "Inter", sans-serif;
     font-size: 0.78rem;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.55;
-    color: rgba(242, 235, 224, 0.45);
+    color: #4a4a4a;
 }
 
 /* ── Card hover accent variations ── */
-.about-card:nth-child(2) {
-    border-color: #f59e0b;
-    box-shadow: 8px 8px 0 #f59e0b;
-}
-.about-card:nth-child(2):hover {
-    box-shadow: 8px 4px 0 #f59e0b;
-}
 .about-card:nth-child(2) .about-card-head {
-    background: #f59e0b;
-    border-bottom-color: #f59e0b;
+    background: #93c5fd;
 }
 
-.about-card:nth-child(3) {
-    border-color: #ea580c;
-    box-shadow: 8px 8px 0 #ea580c;
-}
-.about-card:nth-child(3):hover {
-    box-shadow: 8px 4px 0 #ea580c;
-}
 .about-card:nth-child(3) .about-card-head {
-    background: #ea580c;
-    border-bottom-color: #ea580c;
+    background: #c4b5fd;
 }
 
-.about-card:nth-child(4) {
-    border-color: #d97706;
-    box-shadow: 8px 8px 0 #d97706;
-}
-.about-card:nth-child(4):hover {
-    box-shadow: 8px 4px 0 #d97706;
-}
 .about-card:nth-child(4) .about-card-head {
-    background: #d97706;
-    border-bottom-color: #d97706;
+    background: #fcd34d;
 }
 
 /* ── Responsive: About section ── */
